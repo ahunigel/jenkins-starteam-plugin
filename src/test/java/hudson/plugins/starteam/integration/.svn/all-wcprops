@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/!svn/ver/37052/trunk/hudson/plugins/starteam/src/test/java/hudson/plugins/starteam/integration
+END
+StarTeamViewSelectorIntegrationTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/!svn/ver/33553/trunk/hudson/plugins/starteam/src/test/java/hudson/plugins/starteam/integration/StarTeamViewSelectorIntegrationTest.java
+END
+StarteamConnectionIntegrationTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/!svn/ver/37052/trunk/hudson/plugins/starteam/src/test/java/hudson/plugins/starteam/integration/StarteamConnectionIntegrationTest.java
+END

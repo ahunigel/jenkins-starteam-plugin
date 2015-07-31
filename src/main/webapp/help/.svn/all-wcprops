@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/!svn/ver/33267/trunk/hudson/plugins/starteam/src/main/webapp/help
+END
+stprojectname.html
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/!svn/ver/33082/trunk/hudson/plugins/starteam/src/main/webapp/help/stprojectname.html
+END
+stpromotionstate.html
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/!svn/ver/33267/trunk/hudson/plugins/starteam/src/main/webapp/help/stpromotionstate.html
+END
+stviewname.html
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/!svn/ver/33082/trunk/hudson/plugins/starteam/src/main/webapp/help/stviewname.html
+END
+stfoldername.html
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/!svn/ver/33082/trunk/hudson/plugins/starteam/src/main/webapp/help/stfoldername.html
+END
+sthostname.html
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/!svn/ver/10807/trunk/hudson/plugins/starteam/src/main/webapp/help/sthostname.html
+END
+stusername.html
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/!svn/ver/33082/trunk/hudson/plugins/starteam/src/main/webapp/help/stusername.html
+END
+stlabelname.html
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/!svn/ver/33267/trunk/hudson/plugins/starteam/src/main/webapp/help/stlabelname.html
+END
+stpassword.html
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/!svn/ver/33082/trunk/hudson/plugins/starteam/src/main/webapp/help/stpassword.html
+END
+stport.html
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/!svn/ver/33082/trunk/hudson/plugins/starteam/src/main/webapp/help/stport.html
+END

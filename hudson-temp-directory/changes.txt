@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<changelog>
+	<entry>
+		<fileName>config_file.ini</fileName>
+		<revisionNumber>3</revisionNumber>
+		<date>2010-07-13 22:00:12</date>
+		<message>this is a comment for another Example of a change</message>
+		<user>JRuzicka</user>
+	</entry>
+</changelog>

@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/!svn/ver/32852/trunk/hudson/plugins/starteam/src/main/resources/hudson/plugins/starteam/StarTeamChangeLogSet
+END
+index.jelly
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/!svn/ver/32852/trunk/hudson/plugins/starteam/src/main/resources/hudson/plugins/starteam/StarTeamChangeLogSet/index.jelly
+END
+digest.jelly
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/!svn/ver/32852/trunk/hudson/plugins/starteam/src/main/resources/hudson/plugins/starteam/StarTeamChangeLogSet/digest.jelly
+END

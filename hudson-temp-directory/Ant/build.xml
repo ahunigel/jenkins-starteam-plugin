@@ -1,0 +1,365 @@
+<project name="G4" default="G4.default">
+
+    <target name="G4.default">
+        <echo>This file hooks into the main build. It can't be built alone.</echo>
+    </target>
+
+    <target name="G4.init" unless="G4.initialized">
+        <condition property="plugin.deploy.G4.true">
+            <and>
+                <isset property="plugin.deploy.G4" />
+                <istrue value="${plugin.deploy.G4}" />
+            </and>
+        </condition>
+        <condition property="plugin.delete.classes.true">
+            <and>
+                <isset property="plugin.delete.classes" />
+                <istrue value="${plugin.delete.classes}" />
+            </and>
+        </condition>
+        
+        <echo message="plugin.deploy.G4.true=${plugin.deploy.G4.true}"/>
+
+        <property name="G4.software.dir" value="${jaru.software.dir}/JaruPlugins/G4" />
+        <property name="G4.src.dir" value="${G4.software.dir}/Source/JavaCode" />
+        <property name="G4.test.src.dir" value="${G4.software.dir}/Source/JUnitTestCode" />
+        <property name="G4.webapp.dir" value="${G4.software.dir}/WebRelease" />
+        <property name="G4.webinf.dir" value="${G4.webapp.dir}/WEB-INF" />
+        <property name="G4.classes.dir" value="${G4.webinf.dir}/classes" />
+        <property name="G4.test.classes.dir" value="${G4.webinf.dir}/test_classes" />
+        <property name="G4.junit.output.dir" value="${G4.software.dir}/junit_reports"/>
+    	<property name="pluginutil.webinf.dir" value="${pluginutil.webapp.dir}/WEB-INF" />
+    	<property name="pluginutil.classes.dir" value="${pluginutil.webinf.dir}/classes" />
+
+		<!--  
+        <property name="G4.metadata.dir" value="${G4.software.dir}/Source/metadata" />
+        <property name="G4.hbm2ddl.input.dir" value="${G4.classes.dir}" />
+        <property name="G4.hbm2ddl.output.dir" value="${G4.metadata.dir}/sql/create" />
+        <property name="G4.hbm2ddl.output.file" value="${database.type}_jaru_ddl.sql" />
+        -->
+        <!-- Set DDL file prefix to empty if unset by base -->
+        <!--
+        <property name="hbm2ddl.output.file.prefix" value="" />
+        <property name="seed_data_G4" value="${G4.metadata.dir}/sql/create/seedData.xml" />
+
+        <mkdir dir="${G4.hbm2ddl.output.dir}" />
+        -->
+        
+        <mkdir dir="${G4.classes.dir}" />
+        
+        <property name="G4.initialized" value="true"/>
+    </target>
+
+    <target name="G4.deleteclassesdir"
+            description="deletes all G4 classes"
+            depends="G4.init">
+        <delete dir="${G4.classes.dir}" />
+    </target>
+
+    <target name="G4.deletetestclassesdir"
+            description="deletes all G4 test classes"
+            depends="G4.init">
+        <delete dir="${G4.test.classes.dir}" />
+    </target>
+
+    <target name="G4.compile"
+            description="Builds the G4 Plug In."
+            unless="G4.compiled">
+        <antcall target="G4.init"/>
+        <antcall target="G4.javac"/>
+   <!--   <G4.compile.java2hbm G4.target.dir="${G4.classes.dir}" />  -->
+       
+        <G4.jar/>
+        <property name="G4.compiled" value="true"/>
+    </target>
+
+    <target name="G4.removeclassesdir"
+            description="deletes all G4 classes"
+            depends="G4.init"
+            if="plugin.delete.classes.true">
+        <delete dir="${G4.classes.dir}" />
+    </target>
+
+    <target name="G4.compiletest"
+            description="Builds the G4 Plug In Test Suite"
+            depends="G4.init, G4.testjavac">
+       <!--  <G4.compile.java2hbm G4.target.dir="${G4.test.classes.dir}" />  -->
+    </target>
+
+    <target name="G4.testjavac">
+        <path id="G4.classpath">
+            <pathelement location="${classes.dir}" />
+            <pathelement location="${G4.classes.dir}" />
+            <pathelement location="${pluginutil.classes.dir}" />
+            <pathelement location="${test.classes.dir}" />
+            <path refid="full.classpath" />
+        </path>
+
+        <mkdir dir="${G4.test.classes.dir}" />
+
+        <jaru.javac srcdir="${G4.test.src.dir}"
+                    destdir="${G4.test.classes.dir}">
+            <classpath refid="G4.classpath" />
+        </jaru.javac>
+
+        <antcall target="jaru.rmic">
+          <param name="rmic.classes.dir" value="${G4.test.classes.dir}"/>
+        </antcall>
+
+        <copy todir="${G4.test.classes.dir}">
+            <fileset dir="${G4.test.src.dir}">
+                <exclude name="**/*.java" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="G4.javac"
+            description="Compiles the G4 Plug In.">
+        <mkdir dir="${G4.classes.dir}" />
+        <path id="G4.classpath">
+            <pathelement location="${classes.dir}" />
+            <pathelement location="${G4.classes.dir}" />
+            <pathelement location="${pluginutil.classes.dir}" />
+            <pathelement location="${test.classes.dir}" />
+            <path refid="full.classpath" />
+        </path>
+        <jaru.javac srcdir="${G4.src.dir}"
+                    destdir="${G4.classes.dir}">
+            <classpath refid="G4.classpath" />
+        </jaru.javac>
+        
+        <antcall target="jaru.rmic">
+          <param name="rmic.classes.dir" value="${G4.classes.dir}"/>
+        </antcall>
+        
+        <copy todir="${G4.classes.dir}">
+            <fileset dir="${G4.src.dir}">
+                <exclude name="**/*.java" />
+            </fileset>
+        </copy>
+    </target>
+
+	<!--
+    <macrodef name="G4.compile.java2hbm">
+        <attribute name="G4.target.dir" />
+        <sequential>
+            <dependset>
+                <srcfileset dir="${G4.src.dir}/com/cpcus/jaru/protocol/impl/G4/support/uhpdb/domainobjects"
+                            includes="**/*.java" />
+                <targetfileset dir="@{G4.target.dir}"
+                               includes="**/*.hbm.xml" />
+            </dependset>
+            <if>
+                <available file="@{G4.target.dir}/com/cpcus/jaru/protocol/impl/G4/support/uhpdb/domainobjects/G4TabGroups.hbm.xml" />
+                <then>
+                    <echo>G4 HBM files are up-to-date</echo>
+                </then>
+                <else>
+                    <taskdef name="hibernatedoclet"
+                             classname="xdoclet.modules.hibernate.HibernateDocletTask"
+                             classpathref="full.classpath" />
+                    <echo>BuildiG4 G4 HBM files...</echo>
+                    <hibernatedoclet destDir="@{G4.target.dir}"
+                                     force="true"
+                                     verbose="true">
+                        <fileset dir="${G4.src.dir}"
+                                 includes="**/*.java" />
+                        <hibernate version="2.0"
+                                   destinationFile="{0}.hbm.xml" />
+                    </hibernatedoclet>
+                		
+                	<echo>BuildiG4 G4 HBM files . . .</echo>
+                	<taskdef name="hibernatedoclet" classname="org.xdoclet.ant.XDocletTask" classpathref="full.classpath" />
+                	<hibernatedoclet>
+                	  <fileset dir="${G4.src.dir}" includes="**/*.java" />
+                	  <component classname="org.xdoclet.plugin.hibernate.HibernateMappiG4Plugin"
+                				 destDir="@{G4.target.dir}"
+                				 version="3.0" />
+                	</hibernatedoclet>
+              		
+                	<echo message="G4.target.dir = @{G4.target.dir}" />
+                	<replace dir="@{G4.target.dir}" value="access=&quot;property&quot;">
+                		<include name="**/*.hbm.xml"/>
+                		<replacetoken>access=&quot;method&quot;</replacetoken>
+                	</replace>
+                </else>
+            </if>
+        </sequential>
+    </macrodef>
+	-->
+	
+    <macrodef name="G4.jar" description="Creates G4.jar">
+        <sequential>
+            <jar destfile="${plugins.deploy.lib.dir}/jaru-G4.jar"
+                 basedir="${G4.classes.dir}" />
+        </sequential>
+    </macrodef>
+
+    <target name="G4.mask" unless="plugin.deploy.G4.true">
+        <move failonerror="no" file="${plugins.deploy.lib.dir}/jaru-G4.jar" tofile="${plugins.deploy.lib.dir}/jaru-G4.msk"/>
+    </target>
+        
+    <target name="G4.unmask" unless="plugin.deploy.G4.true">
+        <move failonerror="no" file="${plugins.deploy.lib.dir}/jaru-G4.msk" tofile="${plugins.deploy.lib.dir}/jaru-G4.jar"/>
+    </target>
+
+	
+	<!--
+    <target name="G4._hbm2ddl">
+        <echo>hbm2ddl FULL OUTPUT: ${G4.hbm2ddl.output.dir}/${hbm2ddl.output.file.prefix}${G4.hbm2ddl.output.file}</echo>
+
+        <path id="G4.classpath">
+            <pathelement path="${G4.classes.dir}" />
+        	  <pathelement location="${pluginutil.classes.dir}" /> 
+            <path refid="full.classpath" />
+        </path>
+
+        <taskdef name="hbm2ddl_withFilter"
+                 classname="com.cpcus.jaru.dataAccess.util.antTask.SchemaExportTask"
+                 classpathref="G4.classpath" />
+        <hbm2ddl_withFilter quiet="no"
+                            text="yes"
+                            drop="${hbm2ddl.drop.flag}"
+                            delimiter=";"
+                            output="${G4.hbm2ddl.output.dir}/${hbm2ddl.output.file.prefix}${G4.hbm2ddl.output.file}"
+                filterStriG4="rms_">
+
+            <fileset dir="${hbm2ddl.input.dir}" includes="**/*.hbm.xml" />
+            <fileset dir="${G4.hbm2ddl.input.dir}"
+                     includes="**/*.hbm.xml" />           
+        </hbm2ddl_withFilter>
+    </target>
+
+    <target name="G4.db.create.tables"
+            if="plugin.deploy.G4.true">
+        <echo>CreatiG4 database tables with: ${G4.hbm2ddl.output.dir}/${hbm2ddl.output.file.prefix}${G4.hbm2ddl.output.file}</echo>
+
+        <db.exec.script>
+            <fileset file="${G4.hbm2ddl.output.dir}/${hbm2ddl.output.file.prefix}${G4.hbm2ddl.output.file}" />
+        </db.exec.script>
+    </target>
+    <target name="G4.db.create.tables.test"
+            if="plugin.deploy.G4.true">
+        <echo>CreatiG4 test database tables with: ${G4.hbm2ddl.output.dir}/${hbm2ddl.output.file.prefix}${G4.hbm2ddl.output.file}</echo>
+
+        <db.exec.script url="${hibernate.connection.url.test}"
+                        userid="${hibernate.connection.username.test}"
+                        password="${hibernate.connection.password.test}">
+            <fileset file="${G4.hbm2ddl.output.dir}/${hbm2ddl.output.file.prefix}${G4.hbm2ddl.output.file}" />
+        </db.exec.script>
+    </target>
+
+    <target name="G4.db.load.seed.data"
+            if="plugin.deploy.G4.true">
+        <echo>LoadiG4 database tables with: ${seed_data_G4} and operation: ${operation}</echo>
+
+        <dbunit driver="${hibernate.connection.driver_class}"
+                supportBatchStatement="false"
+                url="${hibernate.connection.url}"
+                userid="${hibernate.connection.username}"
+                password="${hibernate.connection.password}"
+                schema="${hibernate.default_schema}">
+            <operation type="${operation}"
+                       src="${seed_data_G4}"
+                       format="flat" />
+        </dbunit>
+    </target>
+	-->
+
+    <!-- Run G4 tests irrespective of deployment status -->
+  
+    <target name="G4.junit">
+    	 <path id="cobertura.classpath">
+    	          <fileset dir="${env.ANT_HOME}/lib">
+    	            <include name="cobertura.jar" />
+    	            <include name="log4j-1.2.14.jar" />
+    	            <include name="asm-3.0.jar" />
+    	            <include name="asm-tree-3.0.jar" />
+    	            <include name="jakarta-oro-2.0.8.jar" />
+    	          </fileset>
+    	        </path>
+    	        
+    	 <taskdef classpathref="cobertura.classpath" resource="tasks.properties"/>
+    	 <mkdir dir="${G4.junit.output.dir}/test_report-xml" />
+    	<!--
+    	      Remove the coverage data file and any old instrumentation.
+    	    -->
+    	    <delete file="cobertura.ser"/>
+    	    <delete dir="${G4.webinf.dir}/classes-instrumented" />
+
+    	    <!--
+    	      Instrument the application classes, writing the
+    	      instrumented classes into ${build.instrumented.dir}.
+    	    -->
+    	    <cobertura-instrument todir="${G4.webinf.dir}/classes-instrumented">
+    	      <!--
+    	        The following line causes instrument to ignore any
+    	        source line containing a reference to log4j, for the
+    	        purposes of coverage reporting.
+    	      -->
+    	      <ignore regex="org.apache.log4j.*" />
+
+    	      <fileset dir="${G4.classes.dir}">
+    	        <!--
+    	          Instrument all the application classes, but
+    	          don't instrument the test classes.
+    	        -->
+    	        <include name="**/*.class" />
+    	        <exclude name="**/*Test.class" />
+    	      </fileset>
+    	    </cobertura-instrument>
+    	
+    
+    	
+    	<junit printsummary="false"
+               failureProperty="test.failed"
+               fork="yes"
+               forkmode="once"
+               timeout="${junit.timeout.millis}"
+               maxmemory="${junit.maxmemory}"
+               tempdir="${temp.dir}">
+    		<jvmarg value="-Dlog4j.configuration=${G4.test.classes.dir}/junit_log4j.properties" />    
+    		<classpath>
+                <pathelement location="${G4.webinf.dir}/classes-instrumented" />
+                <pathelement location="${G4.test.classes.dir}" />
+                <pathelement location="${classes.dir}" />
+                <pathelement location="${G4.classes.dir}" />
+                <path refid="full.classpath" />
+                <fileset dir="${plugins.deploy.lib.dir}"
+                         includes="**/*.jar"
+                         excludes="${std.exclude}" />
+            </classpath>
+    	    	<classpath refid="cobertura.classpath" />
+            <formatter type="brief" usefile="false" />
+            <formatter type="xml" />
+            <batchtest todir="${G4.junit.output.dir}/test_report-xml">
+                <fileset dir="${G4.test.classes.dir}">
+                    <include name="**/*Test*.class" />
+                    <exclude name="**/*TestCase*.class" />
+                    <exclude name="**/*TestSuite*.class" />
+                    <exclude name="**/_*.class" />
+                </fileset>
+            </batchtest>
+        </junit>
+    	 <!--
+    	        Generate an XML file containing the coverage data using
+    	        the "srcdir" attribute.
+    	      -->
+    	 <cobertura-report srcdir="${G4.src.dir}" destdir="${G4.junit.output.dir}/cobertura-xml" format="xml" />
+    	
+    	 <cobertura-report srcdir="${G4.src.dir}" destdir="${G4.junit.output.dir}/cobertura-summary-xml" format="summaryXml" />
+    </target>
+	
+    <target name="G4.UpdateWar" if="plugin.deploy.G4.true">
+        <fileset id="G4WarFiles" dir="${G4.webapp.dir}" 
+            excludes="**/classes/**/JARUDevelopmentLicenseGenerator.class,${std.exclude},**/classes/**,**/obfuscated_classes/**,**/test_classes/**,**/deploy_lib/**,**/web.xml,**/processed_js/**">
+        </fileset>
+    </target>
+
+    <target name="G4.CopyWebApp" depends="G4.init" if="plugin.deploy.G4.true">
+        <copy todir="${tomcat.deploy.dir}/${appcontext}" preservelastmodified="yes" verbose="true">
+          <fileset dir="${G4.webapp.dir}" 
+              excludes="${std.exclude},**/test_classes/**,**/classes/**,**/obfuscated_classes/**,**/deploy_lib/**,**/processed_js/**,**/classes/**/JARUDevelopmentLicenseGenerator.class" />
+        </copy>
+    </target>
+</project>
