@@ -307,6 +307,23 @@ public class StarTeamConnection implements Serializable {
 			// "... ok");
 			// f.discard();
 		}
+		
+		logger.println("*** removing [" + changeSet.getFilesToRemove().size()
+				+ "] files");
+		boolean quietDelete = changeSet.getFilesToRemove().size() > 100;
+		if (quietDelete) {
+			logger.println("*** More than 100 files, quiet mode enabled");
+		}
+		for (java.io.File f : changeSet.getFilesToRemove()) {
+			if (f.exists()) {
+				if (!quietDelete)
+					logger.println("[remove] [" + f + "]");
+				f.delete();
+			} else {
+				logger.println("[remove:warn] Planned to remove [" + f + "]");
+			}
+		}
+		
 		CheckoutOptions coOptions = new CheckoutOptions(view);
 		coOptions.setLockType(Item.LockType.UNLOCKED);
 		coOptions.setEOLConversionEnabled(true);
@@ -325,12 +342,10 @@ public class StarTeamConnection implements Serializable {
 				// logger.println("***check out finished.result:"+(event.isSuccessful()?"Successful":"Failed"));
 				// }
 				// else
-				// {
-				if (System.currentTimeMillis() - lastUpdate > 1000) {
+				// {			
 					lastUpdate = System.currentTimeMillis();
 					logger.println("***checked out "
-							+ event.getProgress().unwrap().toString());
-				}
+							+ event.getProgress().unwrap().toString()+"  lastUpdate:"+lastUpdate);
 				// }
 				// logger.println(event);
 			}
@@ -360,7 +375,7 @@ public class StarTeamConnection implements Serializable {
 							sleeptimes++;
 							count = getFilesCount(workspace);
 							percentage = ((float) (count - startCount)) / total;
-
+							
 							if (sleeptimes == 10
 									|| percentage - lastpercent > 0.05) {
 								sleeptimes = 0;
@@ -389,21 +404,7 @@ public class StarTeamConnection implements Serializable {
 		com.checkout(filesToCheckout.toArray(new File[0]));
 
 		//
-		logger.println("*** removing [" + changeSet.getFilesToRemove().size()
-				+ "] files");
-		boolean quietDelete = changeSet.getFilesToRemove().size() > 100;
-		if (quietDelete) {
-			logger.println("*** More than 100 files, quiet mode enabled");
-		}
-		for (java.io.File f : changeSet.getFilesToRemove()) {
-			if (f.exists()) {
-				if (!quietDelete)
-					logger.println("[remove] [" + f + "]");
-				f.delete();
-			} else {
-				logger.println("[remove:warn] Planned to remove [" + f + "]");
-			}
-		}
+		
 
 		// buildFolder is null if we're building on a remote slave
 		// Currently, the plugin checks out code on the master and on the remote
