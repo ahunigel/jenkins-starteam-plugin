@@ -1,7 +1,10 @@
 package hudson.plugins.starteam;
 
-import java.io.Serializable;
 import java.io.File;
+import java.io.Serializable;
+import java.util.Date;
+
+import com.starteam.VersionedObject;
 
 /**
  * Stores a reference to the file at the particular revision.
@@ -15,22 +18,29 @@ public class StarTeamFilePoint implements Serializable, Comparable {
 
 	private String fullfilepath;
 	private int revisionnumber;
+	private long lastModifyDate;
 
 	public StarTeamFilePoint() {
 		super();
 	}
 
-	public StarTeamFilePoint(com.starbase.starteam.File f) {
-		this(f.getFullName(),f.getRevisionNumber());
+	public StarTeamFilePoint(com.starteam.File f) {
+		
+		this(f.getFullName(),VersionedObject.getViewVersion(f.getDotNotation()),f.getContentModifiedTime().toJavaMsec());
 	}
 
-	public StarTeamFilePoint(String fullFilePath, int revisionNumber) {
+	public StarTeamFilePoint(String fullFilePath, int revisionNumber,long lastModifyDate) {
 		this.fullfilepath = fullFilePath;
 		this.revisionnumber = revisionNumber;
+		this.lastModifyDate = lastModifyDate;
 	}
 
 	public String getFullfilepath() {
 		return fullfilepath;
+	}
+
+	public long getLastModifyDate() {
+		return this.lastModifyDate;
 	}
 
 	public File getFile() {
@@ -67,6 +77,7 @@ public class StarTeamFilePoint implements Serializable, Comparable {
 	    final StringBuffer buffer = new StringBuffer();
 	    buffer.append( "file: " ).append( fullfilepath );
 	    buffer.append( " revision: " ).append( revisionnumber );
+	    buffer.append( "lastModifyDate:").append(new Date(lastModifyDate));
 	    return buffer.toString();
 	}
 

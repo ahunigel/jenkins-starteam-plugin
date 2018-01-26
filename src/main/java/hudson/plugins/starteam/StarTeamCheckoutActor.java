@@ -1,12 +1,9 @@
 package hudson.plugins.starteam;
 
-import static java.util.logging.Level.INFO;
 import hudson.FilePath;
 import hudson.FilePath.FileCallable;
-import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
-import hudson.model.Run;
-import hudson.plugins.starteam.StarTeamSCM.StarTeamSCMDescriptorImpl;
+import hudson.model.AbstractBuild;
 import hudson.remoting.VirtualChannel;
 
 import java.io.BufferedOutputStream;
@@ -18,9 +15,8 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Collection;
-import java.util.logging.Logger;
 
-import com.starbase.starteam.Folder;
+import com.starteam.Folder;
 
 /**
  * A helper class for transparent checkout operations over the network. Can be
@@ -42,6 +38,8 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
 	private final BuildListener listener;
 	private final String hostname;
 	private final int port;
+	private final String agenthost;
+	private final int agentport;
 	private final String user;
 	private final String passwd;
 	private final String projectname;
@@ -49,7 +47,8 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
 	private final String foldername;
 	private final StarTeamViewSelector config;
 	private final Collection<StarTeamFilePoint> historicFilePoints;
-	private final File buildDir;
+	private final FilePath filePointFilePath;
+	private final int buildNumber;
 
 	/**
 	 * 
@@ -76,12 +75,14 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
 	 * @param listener
 	 * 		the build listener
 	 */
-	public StarTeamCheckoutActor(String hostname, int port, String user,
+	public StarTeamCheckoutActor(String hostname, int port, String agentHost,int agentPort,String user,
 			String passwd, String projectname, String viewname,
 			String foldername, StarTeamViewSelector config, FilePath changelogFile, BuildListener listener,
-			AbstractBuild<?, ?> build, boolean isRemote ) {
+			AbstractBuild<?, ?> build, FilePath filePointFilePath ) {
 		this.hostname = hostname;
 		this.port = port;
+		this.agenthost = agentHost;
+		this.agentport = agentPort;
 		this.user = user;
 		this.passwd = passwd;
 		this.projectname = projectname;
@@ -90,11 +91,18 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
 		this.changelog = changelogFile;
 		this.listener = listener;
 		this.config = config;
+		this.filePointFilePath = filePointFilePath;
+		// Would like to store build in its entirety, but it is not serializable.
+		if (build == null) {
+			this.buildNumber = -1;
+		} else {
+			this.buildNumber = build.getNumber();
+		}
 		
 		// Previous versions stored the build object as a member of StarTeamCheckoutActor. AbstractBuild
 		// objects are not serializable, therefore the starteam plugin would break when remoting to
 		// another machine. Instead of storing the build object the information from the build object
-		// that is needed (historicFilePoints and buildDir) is stored.
+		// that is needed (historicFilePoints) is stored.
 		
 		// Get a list of files that require updating
 		Collection<StarTeamFilePoint> historicFilePoints = null;
@@ -110,9 +118,6 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
 			}
 		}
 		this.historicFilePoints = historicFilePoints;
-		
-		File buildDir = ( build != null )?  build.getRootDir() : null;
-		this.buildDir = (isRemote == false) ? buildDir : null;
 	}
 
 	/*
@@ -123,28 +128,30 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
 	 */
 	public Boolean invoke(File workspace, VirtualChannel channel)
 			throws IOException {
-	  listener.getLogger().println("Start initialize connections");
+		Long start=System.currentTimeMillis();
+		listener.getLogger().println("Initializing StarTeam connection ...");
 		StarTeamConnection connection = new StarTeamConnection(
-				hostname, port, user, passwd,
-				projectname, viewname, foldername, config);
+				hostname, port, agenthost,agentport,user, passwd,
+				projectname, viewname, foldername, config);	
 		try {
-			connection.initialize();
-		} catch (StarTeamSCMException e) {
-			listener.getLogger().println(e.getLocalizedMessage());
-			return false;
-		}
-		
-		listener.getLogger().println("Computing change set ");
+			try {
+				connection.initialize(buildNumber);
+			} catch (StarTeamSCMException e) {
+				listener.getLogger().println(e.getLocalizedMessage());
+				return false;
+			}
+			listener.getLogger().println("Initialized StarTeam connection. took "+(System.currentTimeMillis()-start)+" ms.");
+			
+			listener.getLogger().println("Computing change set ");
 
-		StarTeamChangeSet changeSet;
-		try {
+			StarTeamChangeSet changeSet;
+			
 			Folder rootFolder = connection.getRootFolder();
 			changeSet = connection.computeChangeSet(rootFolder,workspace,historicFilePoints,listener.getLogger());
 			// Check 'em out
 			listener.getLogger().println("performing checkout ...");
-			File buildDir = this.buildDir; 
 
-			connection.checkOut(changeSet, workspace, listener.getLogger(), buildDir);
+			connection.checkOut(changeSet, listener.getLogger(), filePointFilePath);
 
 			listener.getLogger().println("creating change log file ");
 			try {
@@ -155,10 +162,15 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
 			}
 		} catch (StarTeamSCMException e1) {
 			e1.printStackTrace(listener.getLogger());
+			return false;
+		}catch(Exception e){
+			e.printStackTrace(listener.getLogger());
+			return false;
+		}finally{
+			connection.close();
 		}
 		// close the connection
-		connection.close();
-		System.out.println("End check out files.");
+		
 		return true;
 	}
 

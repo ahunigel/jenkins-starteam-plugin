@@ -1,17 +1,19 @@
 package hudson.plugins.starteam;
 
-import com.starbase.starteam.Folder;
-import com.starbase.starteam.View;
-import com.starbase.starteam.File;
-import com.starbase.starteam.Item;
-
-import java.util.Collection;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
+
+import com.starteam.File;
+import com.starteam.Folder;
+import com.starteam.Server;
+import com.starteam.View;
+import com.starteam.ViewMember;
 
 public class StarTeamFunctions {
 
@@ -94,8 +96,6 @@ public class StarTeamFunctions {
 	}
 
   public static Collection<File> listAllFiles(Folder rootFolder, java.io.File workspace) {
-    Long startTime=System.currentTimeMillis();
-    System.out.println("Starting list all files.");
 		Collection<File> result = new ArrayList<File>();
     // set root folder
 		String alternatePath = rootFolder.getAlternatePathFragment();
@@ -108,7 +108,7 @@ public class StarTeamFunctions {
 
 		// Get a list of all files
 		listAllFiles(result, rootFolder);
-		System.out.println("End list all files. tooks "+(System.currentTimeMillis()-startTime)+"ms");
+
 		return result;
 	}
 
@@ -117,9 +117,10 @@ public class StarTeamFunctions {
       listAllFiles(result, f);
     }
     // find items in this folder
-    for (Item i : folder.getItems(folder.getView().getProject().getServer()
-        .getTypeNames().FILE)) {
-      File f = (com.starbase.starteam.File) i;
+    Server server=folder.getView().getProject().getServer();
+    Iterator<ViewMember> it=  folder.getItems(server.getTypes().FILE).iterator();
+    while (it.hasNext() ) {
+      File f = (com.starteam.File) it.next();
       try {
         // This sometimes throws... deep inside starteam =(
         result.add(f);
@@ -128,7 +129,6 @@ public class StarTeamFunctions {
         // + e.getLocalizedMessage());
       }
     }
-//    folder.discard();
   }
 
 
@@ -153,15 +153,11 @@ public class StarTeamFunctions {
     return folderMap;
   }
 
-public static Map<java.io.File,com.starbase.starteam.File> convertToFileMap(final Collection<com.starbase.starteam.File> collection) {
-   
-   Long startTime=System.currentTimeMillis();
-   System.out.println("Starting convert to file map.");
-   Map<java.io.File,com.starbase.starteam.File> result = new TreeMap<java.io.File,com.starbase.starteam.File>();
-    for (com.starbase.starteam.File f:collection) {
+public static Map<java.io.File,com.starteam.File> convertToFileMap(final Collection<com.starteam.File> collection) {
+    Map<java.io.File,com.starteam.File> result = new TreeMap<java.io.File,com.starteam.File>();
+    for (com.starteam.File f:collection) {
       result.put(new java.io.File(f.getFullName()),f);
     }
-    System.out.println("End convert to file map. took "+(System.currentTimeMillis()-startTime)+" ms.");
     return result;
   }
 

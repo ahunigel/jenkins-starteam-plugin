@@ -33,4 +33,10 @@
 	<f:entry title="Password" help="/plugin/starteam/help/stpassword.html">
 		<f:password name="starteam.password" value="${scm.password}" />
 	</f:entry>
+	 <f:entry title="Cache Agent Host(optional)" help="/plugin/starteam/help/agenthost.html">
+    <f:textbox name="starteam.cacheagenthost" value="${scm.cacheagenthost}" />
+  </f:entry>
+  <f:entry title="Cache Agent Port(optional)" help="/plugin/starteam/help/agentport.html">
+    <f:textbox name="starteam.cacheagentport" value="${scm.cacheagentport}" />
+  </f:entry>
 </j:jelly>

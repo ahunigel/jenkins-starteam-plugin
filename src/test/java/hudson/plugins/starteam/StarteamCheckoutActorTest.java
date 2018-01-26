@@ -1,10 +1,10 @@
 package hudson.plugins.starteam;
 
 import hudson.FilePath;
-import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
-import hudson.model.Cause;
 import hudson.model.Result;
+import hudson.model.AbstractBuild;
+import hudson.model.Cause;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -27,7 +26,6 @@ import org.junit.Test;
  * @author Steve Favez <sfavez@verisign.com>
  *
  */
-@Ignore
 public class StarteamCheckoutActorTest {
 
 	final static String CHECHOUT_DIRECTORY = "hudson-temp-directory" ;
@@ -35,7 +33,10 @@ public class StarteamCheckoutActorTest {
 	
 	File parentDirectory = null ;
 	
+	File checkoutFolder = null;
 	File changeLogFile = null ;
+	
+	File filePointsFile = null;
 	
 	BuildListener listener = new BuildListenerImpl() ;
 	/**
@@ -53,6 +54,12 @@ public class StarteamCheckoutActorTest {
 				Assert.fail( "unable to create the directory" ) ;
 			}
 		}
+		checkoutFolder = new File(parentDirectory, "co");
+		if (! checkoutFolder.exists()) {
+			if (! checkoutFolder.mkdir()) {
+				Assert.fail( "unable to create the directory" ) ;
+			}
+		}
 		changeLogFile = new File( parentDirectory, CHANGE_LOG_FILE ) ;
 		if (changeLogFile.exists()) {
 			changeLogFile.delete() ;
@@ -60,58 +67,57 @@ public class StarteamCheckoutActorTest {
 		if (! changeLogFile.createNewFile() ) {
 			Assert.fail( "unable to create changelog file" ) ;
 		}
+		filePointsFile = new File( parentDirectory,  StarTeamConnection.FILE_POINT_FILENAME) ;
+		if (filePointsFile.exists()) {
+			filePointsFile.delete() ;
+		}
+		if (! filePointsFile.createNewFile() ) {
+			Assert.fail( "unable to create file point file" ) ;
+		}
 		
 	}
 	
-	private StarTeamCheckoutActor createStarteamCheckOutActor( Date aPreviousBuildDate ) {
+	private StarTeamCheckoutActor createStarteamCheckOutActor( Date aPreviousBuildDate, AbstractBuild<?,?> build) {
 
-//		String hostName = System.getProperty("test.starteam.hostname", "10.170.12.246");
-//		int port = Integer.parseInt(System.getProperty("test.starteam.hostport", "55201")); 
-//		String projectName = System.getProperty("test.starteam.projectname", "NGBL");
-//		String viewName = System.getProperty("test.starteam.viewname", "NGBL");
-//		String folderName = System.getProperty("test.starteam.foldername", "NGBL/source/ant");
-//		String userName = System.getProperty("test.starteam.username", "");
-//		String password = System.getProperty("test.starteam.password", "");
+		String hostName = System.getProperty("test.starteam.hostname", "starteamserver.ers.na.emersonclimate.org");
+		int port = Integer.parseInt(System.getProperty("test.starteam.hostport", "49201")); 
+		String projectName = System.getProperty("test.starteam.projectname", "JARU");
+		String viewName = System.getProperty("test.starteam.viewname", "JARU");
+		String folderName = System.getProperty("test.starteam.foldername", "JARU/Software/Scripts");
+		String userName = System.getProperty("test.starteam.username", "sonar_hudson_tool");
+		String password = System.getProperty("test.starteam.password", "13m3rson");
 		
-	  String hostName = System.getProperty("test.starteam.hostname", "starteamserver.ers.na.emersonclimate.org");
-	  int port = Integer.parseInt(System.getProperty("test.starteam.hostport", "49201")) ; 
-	  String projectName = System.getProperty("test.starteam.projectname", "JARU");
-//	  String viewName = System.getProperty("test.starteam.viewname", "12.1.3 Branch");
-	  String viewName = System.getProperty("test.starteam.viewname", "JARU");
-	  String folderName = System.getProperty("test.starteam.foldername", "JARU/Software/JaruPlugins/G4/Scripts");
-	  String userName = System.getProperty("test.starteam.username", "sonar_hudson_tool");
-	  String password = System.getProperty("test.starteam.password", "13m3rson");
-	  
 		FilePath changeLogFilePath = new FilePath( changeLogFile ) ;
+		FilePath filePointsFilePath = new FilePath(filePointsFile);
 		StarTeamViewSelector config = null;
 		try {
 			config = new StarTeamViewSelector("", "");
 		} catch (ParseException e) {
 			Assert.fail("");
 		}
-		
-		AbstractBuild<?,?> build = null;
-		StarTeamCheckoutActor starTeamCheckoutActor =  new StarTeamCheckoutActor( hostName, port, userName, password, projectName, viewName, folderName, config, changeLogFilePath, listener, build, false) ;
 
-		return starTeamCheckoutActor ;
+		return new StarTeamCheckoutActor( hostName, port, "CNXA1ER-STARTEA",5201,userName, password, projectName, viewName, folderName, config, changeLogFilePath, listener, build, filePointsFilePath) ;
 	}
 	
 	@Test
 	public void testPerformCheckOut() throws IOException {
-		StarTeamCheckoutActor checkoutActor = createStarteamCheckOutActor(null) ;
-		Boolean res = checkoutActor.invoke( parentDirectory , null) ;
+		StarTeamCheckoutActor checkoutActor = createStarteamCheckOutActor(null,null) ;
+		Boolean res = checkoutActor.invoke( checkoutFolder , null) ;
 		Assert.assertTrue( res ) ;
 		Assert.assertTrue( changeLogFile.length() > 0 ) ;
+		Assert.assertTrue( filePointsFile.length() > 0 ) ;
+		checkoutActor.invoke( checkoutFolder , null) ;
 	}
 	
 	@Test
 	public void testPerformCheckWithPreviousDateOut() throws IOException {
 		Calendar lastYear = Calendar.getInstance() ;
 		lastYear.add(Calendar.MONTH, -3) ;
-		StarTeamCheckoutActor checkoutActor = createStarteamCheckOutActor(lastYear.getTime()) ;
-		Boolean res = checkoutActor.invoke( parentDirectory , null) ;
+		StarTeamCheckoutActor checkoutActor = createStarteamCheckOutActor(lastYear.getTime(),null) ;
+		Boolean res = checkoutActor.invoke( checkoutFolder , null) ;
 		Assert.assertTrue( res ) ;
 		Assert.assertTrue( changeLogFile.length() > 0 ) ;
+		Assert.assertTrue( filePointsFile.length() > 0 ) ;
 	}
 	
 	private final static class BuildListenerImpl implements BuildListener {

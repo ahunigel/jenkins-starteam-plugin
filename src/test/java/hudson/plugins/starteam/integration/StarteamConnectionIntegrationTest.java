@@ -18,10 +18,9 @@ import java.util.Collection;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import com.starbase.starteam.Folder;
+import com.starteam.Folder;
 
 /**
  * test all starteam functionalities against a real starteam repository
@@ -29,7 +28,7 @@ import com.starbase.starteam.Folder;
  * @author Steve Favez <sfavez@verisign.com>
  *
  */
-@Ignore
+//@Ignore
 public class StarteamConnectionIntegrationTest {
 	
 	/**
@@ -50,18 +49,18 @@ public class StarteamConnectionIntegrationTest {
 	 */
 	@Before
 	public void setUp() throws StarTeamSCMException {
-		//initialise the starteam connection
-		String hostName = System.getProperty("test.starteam.hostname", "10.170.12.246");
-		int port = Integer.parseInt(System.getProperty("test.starteam.hostport", "55201")); 
-		String projectName = System.getProperty("test.starteam.projectname", "NGBL");
-		String viewName = System.getProperty("test.starteam.viewname", "NGBL");
-		String folderName = System.getProperty("test.starteam.foldername", "NGBL/source/ant");
-		String userName = System.getProperty("test.starteam.username", "");
-		String password = System.getProperty("test.starteam.password", "");
-		dateinpast = System.getProperty("test.starteam.dateinpast", "");
+		//initialise the starteam connection"starteamserver.ers.na.emersonclimate.org", 49201, "automated_build","auto", "JARU", "JARU","d:/blame"
+		String hostName = System.getProperty("test.starteam.hostname", "starteamserver.ers.na.emersonclimate.org");
+		int port = Integer.parseInt(System.getProperty("test.starteam.hostport", "49201")); 
+		String projectName = System.getProperty("test.starteam.projectname", "JARU");
+		String viewName = System.getProperty("test.starteam.viewname", ".16.3.0 from Merged 16.2.0B09 Plugins 16.2.0B11");
+		String folderName = System.getProperty("test.starteam.foldername", "JARU/Software/JaruPlugins/ProActRMS");
+		String userName = System.getProperty("test.starteam.username", "automated_build");
+		String password = System.getProperty("test.starteam.password", "auto");
+		dateinpast = System.getProperty("test.starteam.dateinpast", "2016/4/11 00:00:00");
 
-		starTeamConnection = new StarTeamConnection( hostName, port, userName, password, projectName, viewName, folderName, null ) ;
-		starTeamConnection.initialize() ;
+		starTeamConnection = new StarTeamConnection( hostName, port, "CNXA1ER-STARTEA",5201,userName, password, projectName, viewName, folderName, null ) ;
+		starTeamConnection.initialize(-1) ;
 	
 		//create the default folder
 		parentDirectory = new File("hudson-temp-directory") ;
@@ -79,11 +78,11 @@ public class StarteamConnectionIntegrationTest {
 	@Test
 	public void testFindAllFiles() {
 		
-		Collection<com.starbase.starteam.File> starteamFiles = StarTeamFunctions.listAllFiles(starTeamConnection.getRootFolder(), parentDirectory);
+		Collection<com.starteam.File> starteamFiles = StarTeamFunctions.listAllFiles(starTeamConnection.getRootFolder(), parentDirectory);
 		Assert.assertNotNull(starteamFiles) ;
 		Assert.assertTrue( starteamFiles.size() > 0 ) ;
 		int i=0;
-		for (com.starbase.starteam.File file: starteamFiles)
+		for (com.starteam.File file: starteamFiles)
 		{
 			Assert.assertNotNull("file ["+i+"] in list of all files is null",file);
 			i++;
@@ -106,7 +105,7 @@ public class StarteamConnectionIntegrationTest {
 		timeInPast.setTime(df.parse(dateinpast));
 		StarTeamViewSelector selector = new StarTeamViewSelector(timeInPast.getTime());		
 		StarTeamConnection oldStarTeamConnection = new StarTeamConnection(starTeamConnection,selector);
-		oldStarTeamConnection.initialize();
+		oldStarTeamConnection.initialize(-1);
 
 		// get file list from the view to identify changes since the timeInPast 
 		// there is no list of previous files 

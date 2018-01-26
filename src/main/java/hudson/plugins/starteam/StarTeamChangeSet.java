@@ -3,9 +3,7 @@ package hudson.plugins.starteam;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.starbase.starteam.File;
-import com.starbase.starteam.ItemList;
-import com.starbase.starteam.PropertyNames;
+import com.starteam.File;
 
 /**
  * The collection of actions that need to be performed upon checkout.
@@ -76,26 +74,6 @@ public class StarTeamChangeSet {
   public Collection<StarTeamChangeLogEntry> getChanges() {
 	   return changes;
 	}
-  
-  public void updateChangesCommentsAndRevisionNumber(){
-    ItemList itemList=new ItemList();
-    PropertyNames pnames = null;
-    for(StarTeamChangeLogEntry change:changes)
-    {
-      if(change.getFile()!=null){
-        itemList.addItem(change.getFile());        
-      }
-    }
-    if(itemList.size()>0)
-    {
-      pnames=itemList.getAt(0).getPropertyNames();
-      itemList.populateNow(new String[] { pnames.FILE_CONTENT_REVISION,pnames.COMMENT});
-    }
-    for(StarTeamChangeLogEntry change:changes)
-    {
-      change.updateComentsAndRevision();
-    }
-  }
 
   @Override
   public String toString() {

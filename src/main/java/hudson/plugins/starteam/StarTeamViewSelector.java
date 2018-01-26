@@ -8,12 +8,14 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import com.starbase.starteam.Label;
-import com.starbase.starteam.PromotionState;
-import com.starbase.starteam.View;
-import com.starbase.starteam.ViewConfiguration;
-import com.starbase.util.OLEDate;
+import com.starteam.Label;
+import com.starteam.PromotionState;
+import com.starteam.View;
+import com.starteam.ViewConfiguration;
+import com.starteam.util.DateTime;
 
 /**
  * 
@@ -24,6 +26,8 @@ import com.starbase.util.OLEDate;
  */
 public class StarTeamViewSelector implements Serializable {
 	private static final long serialVersionUID = 1L;
+
+	private final static Pattern labelPattern = Pattern.compile("%\\{(.*?):BUILD_NUMBER\\}");
 	
 	/**
 	 * Current: view brings the most recent or "tip" versions of items, 
@@ -79,7 +83,7 @@ public class StarTeamViewSelector implements Serializable {
 	    }
 	}
 
-	public View configView(View baseView) throws StarTeamSCMException, ParseException{
+	public View configView(View baseView, int buildNumber) throws StarTeamSCMException, ParseException{
 		final ViewConfiguration configuration;
 
 		if (configInfo != null && !configInfo.isEmpty()) {
@@ -88,22 +92,36 @@ public class StarTeamViewSelector implements Serializable {
 				configuration = ViewConfiguration.createTip();
 				break;
 			case LABEL:
-				int labelId = findLabelInView(baseView, configInfo);
-				configuration = ViewConfiguration.createFromLabel(labelId);
+				Label label;
+				// check if label is a pattern
+				String labelName = expandLabelPattern(configInfo, buildNumber);
+				if (!configInfo.equals(labelName)) {
+					// -1 is the buildNumber during a poll event. Use tip when polling,
+					// create label otherwise.
+					if (buildNumber == -1) {
+						configuration = ViewConfiguration.createTip();
+						break;
+					}
+
+					label = createLabelInView(baseView, labelName, buildNumber);
+				} else {
+					label = findLabelInView(baseView, labelName);
+				}
+				configuration = ViewConfiguration.createFrom(label);
 				break;
 			case PROMOTION:		          
 				// note: If the promotion state is assigned to <<current>> then the resulting ID will be NULL and
 				// we will revert to a view based on the current tip.
-				Integer promotionStateId = findPromotionStateInView(baseView, configInfo);
-				if (promotionStateId != null) {
-					configuration = ViewConfiguration.createFromPromotionState(promotionStateId);
+				PromotionState promotionState = findPromotionStateInView(baseView, configInfo);
+				if (promotionState != null) {
+					configuration = ViewConfiguration.createFrom(promotionState);
 				} else {					
 					configuration = ViewConfiguration.createTip();
 				}
 				break;
 			case TIME:
 	            Date effectiveDate = df.parse(configInfo);
-				configuration = ViewConfiguration.createFromTime(new OLEDate(effectiveDate));
+				configuration = ViewConfiguration.createFrom(new DateTime(effectiveDate));
 				break;
 			default:
 				throw new StarTeamSCMException("Could not construct view - no configuration provided");
@@ -114,23 +132,42 @@ public class StarTeamViewSelector implements Serializable {
 		return new View(baseView, configuration);
 	}
 
-	private static int findLabelInView(final View view, final String labelname) throws StarTeamSCMException {
+	public static String expandLabelPattern(final String labelformat, final int buildNumber) {
+		Matcher m = labelPattern.matcher(labelformat);
+		StringBuffer sb = new StringBuffer();
+		while (m.find()) {
+			String fmt = "%" + m.group(1);
+			m.appendReplacement(sb, String.format(fmt, buildNumber));
+		}
+		m.appendTail(sb);
+		return sb.toString();
+	}
+
+	private static Label findLabelInView(final View view, final String labelname) throws StarTeamSCMException {
 		for (Label label : view.getLabels()) {
 			if (labelname.equals(label.getName())) {
-				return label.getID();
+				return label;
 			}
 		}
 		throw new StarTeamSCMException("Couldn't find label [" + labelname + "] in view " + view.getName());
 	}
 
-	private static Integer findPromotionStateInView(final View view, final String promotionState) throws StarTeamSCMException {
+	private static Label createLabelInView(final View view, final String labelName, final int buildNumber) throws StarTeamSCMException {
+		final String labelDesc = String.format("Jenkins build %d", buildNumber);
+		final boolean buildLabel = true;
+		final boolean frozen = true;
+		Label label = view.createViewLabel(labelName, labelDesc, DateTime.CURRENT_SERVER_TIME, buildLabel, frozen);
+		return label;
+	}
+
+	private static PromotionState findPromotionStateInView(final View view, final String promotionState) throws StarTeamSCMException {
 		for (PromotionState ps : view.getPromotionModel().getPromotionStates()) {
 			if (promotionState.equals(ps.getName())) {
-				if (ps.getLabelID() == -1) {
+				if (ps.getID() == -1) {
 					// PROMOTION STATE is set to <<current>>
 					return null;
 				}
-				return ps.getObjectID();
+				return ps;
 			}
 		}
 		throw new StarTeamSCMException("Couldn't find promotion state " + promotionState + " in view " + view.getName());

@@ -1,6 +1,10 @@
 package hudson.plugins.starteam;
 
+import hudson.FilePath;
+
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Functions operating on StarTeamFilePoint type.
@@ -21,9 +26,9 @@ public class StarTeamFilePointFunctions {
  * @param collection Collection of StarTeam files
  * @return collection of full path file names 
  */
-public static Collection<java.io.File> convertToFileCollection(final Collection<com.starbase.starteam.File> collection) {
+public static Collection<java.io.File> convertToFileCollection(final Collection<com.starteam.File> collection) {
     Collection<java.io.File> result = new ArrayList<java.io.File>();
-    for (com.starbase.starteam.File f:collection) {
+    for (com.starteam.File f:collection) {
       result.add(new java.io.File(f.getFullName()));
     }
 
@@ -34,9 +39,9 @@ public static Collection<java.io.File> convertToFileCollection(final Collection<
  * @param collection Collection of StarTeam files
  * @return collection of FilePoints - information vector needed keeping track of file status 
  */
-  public static Collection<StarTeamFilePoint> convertFilePointCollection(final Collection<com.starbase.starteam.File> collection) throws IOException {
+  public static Collection<StarTeamFilePoint> convertFilePointCollection(final Collection<com.starteam.File> collection) throws IOException {
     Collection<StarTeamFilePoint> result = new ArrayList<StarTeamFilePoint>();
-    for (com.starbase.starteam.File f:collection) {
+    for (com.starteam.File f:collection) {
       result.add(new StarTeamFilePoint(f));
     }
     return result;
@@ -50,8 +55,8 @@ public static Collection<java.io.File> convertToFileCollection(final Collection<
     return result;
   }
 
-  public static Collection<com.starbase.starteam.File> extractFileSubCollection(final Map<java.io.File, com.starbase.starteam.File> map, final Collection<java.io.File> collection) {
-    Collection<com.starbase.starteam.File> result = new ArrayList<com.starbase.starteam.File>();
+  public static Collection<com.starteam.File> extractFileSubCollection(final Map<java.io.File, com.starteam.File> map, final Collection<java.io.File> collection) {
+    Collection<com.starteam.File> result = new ArrayList<com.starteam.File>();
     for (java.io.File f:collection) {
       result.add(map.get(f));
     }
@@ -107,26 +112,31 @@ public static Collection<java.io.File> convertToFileCollection(final Collection<
     Collection<StarTeamFilePoint> result = new ArrayList<StarTeamFilePoint>();
     for (String str:stringCollection) {
 
-      int pos = str.indexOf(',');
+    	String data[] = str.split(",");
 
-      String revision = str.substring(0,pos);
-      String path = str.substring(pos+1);
-
-      StarTeamFilePoint f = new StarTeamFilePoint(path,Integer.parseInt(revision));
+      String revision = data[0];
+      String lastModifyTime = data[1];
+      String path;
+      if(data.length==3){
+    	  path= data[2];
+      }else{
+    	  path =data[1]; 
+    	  lastModifyTime="0";
+      }
+      StarTeamFilePoint f = new StarTeamFilePoint(path,Integer.parseInt(revision),Long.parseLong(lastModifyTime));
 
       result.add(f);
     }
-    FileUtils.writeLines(file,"ISO-8859-1",stringCollection);
 
     return result;
   }
 
-  public static void storeCollection(final java.io.File file, final Collection<StarTeamFilePoint> collection) throws IOException {
+  public static void storeCollection(final OutputStream bos, final Collection<StarTeamFilePoint> collection) throws IOException {
     Collection<String> stringCollection = new ArrayList<String>();
-    for (StarTeamFilePoint i:collection) {
-      stringCollection.add(i.getRevisionNumber()+","+i.getFullfilepath());
-    }
-    FileUtils.writeLines(file,"ISO-8859-1",stringCollection);
+	for (StarTeamFilePoint i:collection) {
+      stringCollection.add(i.getRevisionNumber()+","+i.getLastModifyDate()+","+i.getFullfilepath());
+	}
+	IOUtils.writeLines(stringCollection, null, bos, "ISO-8859-1");
   }
 
 }
