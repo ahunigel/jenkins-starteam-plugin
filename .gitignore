@@ -49,3 +49,4 @@ target/
 .settings/
 .idea
 *.iml
+/hudson-temp-directory/
