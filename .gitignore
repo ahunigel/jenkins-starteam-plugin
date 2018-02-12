@@ -49,4 +49,5 @@ target/
 .settings/
 .idea
 *.iml
+.svn/
 /hudson-temp-directory/
