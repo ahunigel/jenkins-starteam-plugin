@@ -32,12 +32,13 @@ public class StarTeamSCM1Test extends HudsonTestCase
   String promotionName = System.getProperty("test.starteam.promotionname", "");
   String changeDate = System.getProperty("test.starteam.changedate", "");
   String testFile = System.getProperty("test.starteam.testfile", "");
-
+  String cacheagenthost= System.getProperty("test.starteam.cacheagenthost", "CNXA1ER-STARTEA");
+  int cacheagentport = Integer.parseInt(System.getProperty("test.starteam.cacheagentport", "5201"));
   
   @Before
   public void setUp() throws Exception {
     super.setUp();
-    t = new StarTeamSCM(hostName, port, projectName, viewName, folderName, userName, password, null, false) ;
+    t = new StarTeamSCM(hostName, port, projectName, viewName, folderName, userName, password, null, false, cacheagenthost, cacheagentport) ;
   }
     
   @After  

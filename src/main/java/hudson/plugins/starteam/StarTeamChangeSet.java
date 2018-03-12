@@ -1,23 +1,23 @@
 package hudson.plugins.starteam;
 
+import com.starteam.File;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.starteam.File;
-
 /**
  * The collection of actions that need to be performed upon checkout.
- *
+ * <p>
  * Files to remove: Typically folders get removed in starteam and the files get left on disk.
- *
+ * <p>
  * Files to checkout: Files that are out of date, missing, etc.
- *
+ * <p>
  * File Points to remember: When using promotions states/labels file changes may be pushed forward
- *    or rolled backwards.  Either way, it is difficult (using starteam) to accurately determine
- *    the previous build when various different labelling strategies are being used (e.g. promotion
- *    states, etc).  For this reason we persist a list of the filepoints used upon checkout in the
- *    build folder.  This is then used to compare current v.s. historic and compute the changelist.
- *
+ * or rolled backwards.  Either way, it is difficult (using starteam) to accurately determine
+ * the previous build when various different labelling strategies are being used (e.g. promotion
+ * states, etc).  For this reason we persist a list of the filepoints used upon checkout in the
+ * build folder.  This is then used to compare current v.s. historic and compute the changelist.
+ * <p>
  * Changes to log: LogEntries for changes. This is information to be written to change log
  */
 public class StarTeamChangeSet {
@@ -33,7 +33,7 @@ public class StarTeamChangeSet {
   private Collection<StarTeamChangeLogEntry> changes = new ArrayList<StarTeamChangeLogEntry>();
 
   public boolean hasChanges() {
-      return !changes.isEmpty() ;
+    return !changes.isEmpty();
   }
 
   public Collection<java.io.File> getFilesToRemove() {
@@ -67,18 +67,19 @@ public class StarTeamChangeSet {
   public void setComparisonAvailable(boolean comparisonAvailable) {
     this.comparisonAvailable = comparisonAvailable;
   }
+
   public void addChange(StarTeamChangeLogEntry value) {
-	  changes.add(value);
+    changes.add(value);
   }
 
   public Collection<StarTeamChangeLogEntry> getChanges() {
-	   return changes;
-	}
+    return changes;
+  }
 
   @Override
   public String toString() {
     final StringBuffer buffer = new StringBuffer();
-    buffer.append( " changes: " ).append( changes.size() );
+    buffer.append(" changes: ").append(changes.size());
     return buffer.toString();
   }
 }

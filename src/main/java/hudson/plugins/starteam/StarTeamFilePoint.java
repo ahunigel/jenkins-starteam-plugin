@@ -1,84 +1,84 @@
 package hudson.plugins.starteam;
 
+import com.starteam.VersionedObject;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.Date;
-
-import com.starteam.VersionedObject;
 
 /**
  * Stores a reference to the file at the particular revision.
  */
 public class StarTeamFilePoint implements Serializable, Comparable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
-	private String fullfilepath;
-	private int revisionnumber;
-	private long lastModifyDate;
+  private String fullfilepath;
+  private int revisionnumber;
+  private long lastModifyDate;
 
-	public StarTeamFilePoint() {
-		super();
-	}
+  public StarTeamFilePoint() {
+    super();
+  }
 
-	public StarTeamFilePoint(com.starteam.File f) {
-		
-		this(f.getFullName(),VersionedObject.getViewVersion(f.getDotNotation()),f.getContentModifiedTime().toJavaMsec());
-	}
+  public StarTeamFilePoint(com.starteam.File f) {
 
-	public StarTeamFilePoint(String fullFilePath, int revisionNumber,long lastModifyDate) {
-		this.fullfilepath = fullFilePath;
-		this.revisionnumber = revisionNumber;
-		this.lastModifyDate = lastModifyDate;
-	}
+    this(f.getFullName(), VersionedObject.getViewVersion(f.getDotNotation()), f.getContentModifiedTime().toJavaMsec());
+  }
 
-	public String getFullfilepath() {
-		return fullfilepath;
-	}
+  public StarTeamFilePoint(String fullFilePath, int revisionNumber, long lastModifyDate) {
+    this.fullfilepath = fullFilePath;
+    this.revisionnumber = revisionNumber;
+    this.lastModifyDate = lastModifyDate;
+  }
 
-	public long getLastModifyDate() {
-		return this.lastModifyDate;
-	}
+  public String getFullfilepath() {
+    return fullfilepath;
+  }
 
-	public File getFile() {
-		return new File(getFullfilepath());
-	}
+  public long getLastModifyDate() {
+    return this.lastModifyDate;
+  }
 
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+  public File getFile() {
+    return new File(getFullfilepath());
+  }
 
-		StarTeamFilePoint that = (StarTeamFilePoint) o;
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
 
-		if (fullfilepath != null ? !fullfilepath.equals(that.fullfilepath) : that.fullfilepath != null) return false;
+    StarTeamFilePoint that = (StarTeamFilePoint) o;
 
-		return true;
-	}
+    if (fullfilepath != null ? !fullfilepath.equals(that.fullfilepath) : that.fullfilepath != null) return false;
 
-	public int hashCode() {
-		int result;
-		result = (fullfilepath != null ? fullfilepath.hashCode() : 0);
-		return result;
-	}
+    return true;
+  }
 
-	public int compareTo(Object o) {
-		return fullfilepath.toLowerCase().compareTo(((StarTeamFilePoint)o).fullfilepath.toLowerCase());
-	}
+  public int hashCode() {
+    int result;
+    result = (fullfilepath != null ? fullfilepath.hashCode() : 0);
+    return result;
+  }
 
-	public int getRevisionNumber() {
-		return revisionnumber;
-	}
+  public int compareTo(Object o) {
+    return fullfilepath.toLowerCase().compareTo(((StarTeamFilePoint) o).fullfilepath.toLowerCase());
+  }
 
-	@Override
-	public String toString() {
-	    final StringBuffer buffer = new StringBuffer();
-	    buffer.append( "file: " ).append( fullfilepath );
-	    buffer.append( " revision: " ).append( revisionnumber );
-	    buffer.append( "lastModifyDate:").append(new Date(lastModifyDate));
-	    return buffer.toString();
-	}
+  public int getRevisionNumber() {
+    return revisionnumber;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuffer buffer = new StringBuffer();
+    buffer.append("file: ").append(fullfilepath);
+    buffer.append(" revision: ").append(revisionnumber);
+    buffer.append("lastModifyDate:").append(new Date(lastModifyDate));
+    return buffer.toString();
+  }
 
 }

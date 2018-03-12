@@ -11,47 +11,45 @@ import java.util.List;
  * <p>
  * Implementation of {@link ChangeLogSet} for StarTeam SCM.
  * </p>
- * 
+ *
  * @author Eric D. Broyles
  * @version 1.0
  */
 public class StarTeamChangeLogSet extends ChangeLogSet<StarTeamChangeLogEntry> {
 
-	private List<StarTeamChangeLogEntry> history = null;
+  private List<StarTeamChangeLogEntry> history = null;
 
-	/**
-	 * default constructor for log set.
-	 * 
-	 * @param aBuild
-	 * 		the build associated with changes.
-	 * @param logs
-	 * 		all log entries.
-	 */
-	public StarTeamChangeLogSet(AbstractBuild<?, ?> aBuild,
-			List<StarTeamChangeLogEntry> logs) {
-		super(aBuild);
-		this.history = Collections.unmodifiableList(logs);
-	}
+  /**
+   * default constructor for log set.
+   *
+   * @param aBuild the build associated with changes.
+   * @param logs   all log entries.
+   */
+  public StarTeamChangeLogSet(AbstractBuild<?, ?> aBuild,
+                              List<StarTeamChangeLogEntry> logs) {
+    super(aBuild);
+    this.history = Collections.unmodifiableList(logs);
+  }
 
-	@Override
-	public boolean isEmptySet() {
-		return history.isEmpty();
-	}
+  @Override
+  public boolean isEmptySet() {
+    return history.isEmpty();
+  }
 
-	/**
-	 * return an iterator over all change log entries.
-	 */
-	public Iterator<StarTeamChangeLogEntry> iterator() {
-		return history.iterator();
-	}
+  /**
+   * return an iterator over all change log entries.
+   */
+  public Iterator<StarTeamChangeLogEntry> iterator() {
+    return history.iterator();
+  }
 
-	/**
-	 * Return the history for this change log set.
-	 * 
-	 * @return a List of all log entries
-	 */
-	public List<StarTeamChangeLogEntry> getHistory() {
-		return history;
-	}
+  /**
+   * Return the history for this change log set.
+   *
+   * @return a List of all log entries
+   */
+  public List<StarTeamChangeLogEntry> getHistory() {
+    return history;
+  }
 
 }

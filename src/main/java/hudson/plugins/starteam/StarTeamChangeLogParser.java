@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package hudson.plugins.starteam;
 
@@ -7,6 +7,10 @@ import hudson.model.AbstractBuild;
 import hudson.scm.ChangeLogParser;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
+import org.dom4j.Document;
+import org.dom4j.Node;
+import org.dom4j.io.SAXReader;
+import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,14 +20,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dom4j.Document;
-import org.dom4j.Node;
-import org.dom4j.io.SAXReader;
-import org.xml.sax.SAXException;
-
 /**
  * ChangeLogParser implementation for the StarTeam SCM.
- * 
+ *
  * @author Eric D. Broyles
  * @version 1.0
  */
@@ -33,22 +32,20 @@ public class StarTeamChangeLogParser extends ChangeLogParser {
    */
   @Override
   public ChangeLogSet<? extends Entry> parse(AbstractBuild build,
-      File changelogFile) throws IOException, SAXException {
+                                             File changelogFile) throws IOException, SAXException {
     return parse0(build, new FileInputStream(changelogFile),
         changelogFile.getAbsolutePath());
   }
 
   /**
    * Parses the change log stream and returns a Perforce change log set.
-   * 
-   * @param aBuild
-   *          the build for the change log
-   * @param aChangeLogStream
-   *          input stream containing the change log
+   *
+   * @param aBuild           the build for the change log
+   * @param aChangeLogStream input stream containing the change log
    * @return the change log set
    */
   public static StarTeamChangeLogSet parse(AbstractBuild aBuild,
-      InputStream aChangeLogStream) throws IOException, SAXException {
+                                           InputStream aChangeLogStream) throws IOException, SAXException {
     return parse0(aBuild, aChangeLogStream, null);
   }
 
@@ -57,12 +54,14 @@ public class StarTeamChangeLogParser extends ChangeLogParser {
         @Override
         protected SimpleDateFormat initialValue() {
           return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        };
+        }
+
+        ;
       };
 
   @SuppressWarnings("unchecked")
   private static StarTeamChangeLogSet parse0(AbstractBuild aBuild,
-      InputStream aChangeLogStream, String filePath) throws IOException,
+                                             InputStream aChangeLogStream, String filePath) throws IOException,
       SAXException {
 
     ArrayList<StarTeamChangeLogEntry> changeLogEntries =

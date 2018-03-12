@@ -1,6 +1,7 @@
 package hudson.plugins.starteam;
 
 import hudson.FilePath;
+import hudson.console.ConsoleNote;
 import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.model.AbstractBuild;
@@ -166,7 +167,16 @@ public class StarteamCheckoutActorTest {
 	    public void finished(Result result) {
 	    	printWriter.println("Finished: "+result);
 	    }
-		
+
+		@Override
+		public void annotate(ConsoleNote ann) throws IOException {
+			// TODO: 3/12/2018 implement annotate method
+		}
+
+		@Override
+		public void hyperlink(String url, String text) throws IOException {
+			// TODO: 3/12/2018 implement hyperlink method
+		}
 	}
 	
 }

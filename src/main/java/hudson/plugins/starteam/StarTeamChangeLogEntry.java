@@ -12,7 +12,7 @@ import java.util.LinkedList;
  * <p>
  * Implementation of {@link hudson.scm.ChangeLogSet.Entry} for StarTeam SCM.
  * </p>
- * 
+ *
  * @author Eric D. Broyles
  * @version 1.0
  */
@@ -31,7 +31,7 @@ public class StarTeamChangeLogEntry extends hudson.scm.ChangeLogSet.Entry {
   private String changeType;
 
   public StarTeamChangeLogEntry(String fileName, int revisionNumber, Date date,
-      String username, String msg, String changeType) {
+                                String username, String msg, String changeType) {
     super();
     this.revisionNumber = revisionNumber;
     this.username = username;
@@ -54,15 +54,15 @@ public class StarTeamChangeLogEntry extends hudson.scm.ChangeLogSet.Entry {
 
   /**
    * Gets the Hudson user based upon the StarTeam {@link #username}.
-   * 
+   *
    * @see hudson.scm.ChangeLogSet.Entry#getAuthor()
    */
   @Override
   public User getAuthor() {
-    User user= User.get(username);
+    User user = User.get(username);
     user.setFullName("");
     new Mailer.UserProperty("");
- 
+
     return user;
   }
 
