@@ -110,7 +110,7 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
    */
   public Boolean invoke(File workspace, VirtualChannel channel) {
     Long start = System.currentTimeMillis();
-    listener.getLogger().println("Initializing StarTeam connection ...");
+    listener.getLogger().println(String.format("Initializing StarTeam connection to %s:%s ...", hostname, port));
     StarTeamConnection connection = new StarTeamConnection(
         hostname, port, agenthost, agentport, user, passwd,
         projectname, viewname, foldername, config);
@@ -123,7 +123,7 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
       }
       listener.getLogger().println("Initialized StarTeam connection. took " + (System.currentTimeMillis() - start) + " ms.");
 
-      listener.getLogger().println("Computing change set ");
+      listener.getLogger().println(String.format("Computing change set for %s-%s-%s", projectname, viewname, foldername));
 
       StarTeamChangeSet changeSet;
 

@@ -189,7 +189,7 @@ public class StarTeamConnection implements Serializable {
       throw new StarTeamSCMException("Could not log on: " + e.getErrorMessage());
     }
     if (server.isMPXAvailable()) {
-      CacheAgent agent = server.locateCacheAgent(agentHost, agentPort);
+      server.locateCacheAgent(agentHost, agentPort);
     }
     project = findProjectOnServer(server, projectName);
     view = findViewInProject(project, viewName);
@@ -537,7 +537,7 @@ public class StarTeamConnection implements Serializable {
           if (file.getContentModifiedTime().toJavaMsec() == localFile.lastModified() || starteamFileMD5.equals(localFileMD5)) {
             continue;
           } else {
-            logger.println(" File " + file.getFullName() + " MD5:" + localFileMD5 + " starteam MD5:" + starteamFileMD5);
+            logger.println(" File " + file.getFullName() + "\n  localfileMD5:" + localFileMD5 + "\n  starteam MD5:" + starteamFileMD5);
           }
         }
         result.add(file);
