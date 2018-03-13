@@ -1,7 +1,7 @@
 /**
  *
  */
-package hudson.plugins.starteam;
+package hudson.plugins.starteam.community;
 
 import hudson.model.Descriptor;
 import hudson.scm.ChangeLogSet.Entry;

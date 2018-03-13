@@ -1,4 +1,4 @@
-package hudson.plugins.starteam;
+package hudson.plugins.starteam.community;
 
 import hudson.Util;
 

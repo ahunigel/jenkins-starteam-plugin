@@ -1,4 +1,4 @@
-package hudson.plugins.starteam;
+package hudson.plugins.starteam.community;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;

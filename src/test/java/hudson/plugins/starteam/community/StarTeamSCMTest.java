@@ -1,4 +1,4 @@
-package hudson.plugins.starteam;
+package hudson.plugins.starteam.community;
 
 import hudson.model.Cause;
 import hudson.model.FreeStyleBuild;
@@ -233,7 +233,7 @@ public class StarTeamSCMTest extends HudsonTestCase {
 	/*
 	 * Get the hostname this SCM is using.
 	 * 
-	 * @see hudson.plugins.starteam.StarTeamSCM#getHostname()
+	 * @see StarTeamSCM#getHostname()
 	 */
 	@Test
 	public void testGetHostname() {
@@ -243,7 +243,7 @@ public class StarTeamSCMTest extends HudsonTestCase {
 	/*
 	 * Get the port number this SCM is using.
 	 * 
-	 * @see hudson.plugins.starteam.StarTeamSCM#getPort()
+	 * @see StarTeamSCM#getPort()
 	 */
 	@Test
 	public void testGetPort() {
@@ -253,7 +253,7 @@ public class StarTeamSCMTest extends HudsonTestCase {
 	/*
 	 * Get the project name this SCM is connected to.
 	 * 
-	 * @see hudson.plugins.starteam.StarTeamSCM#getProjectname()
+	 * @see StarTeamSCM#getProjectname()
 	 */
 	@Test
 	public void testGetProjectname() {
@@ -263,7 +263,7 @@ public class StarTeamSCMTest extends HudsonTestCase {
 	/*
 	 * Get the view name in the project this SCM uses.
 	 * 
-	 * @see hudson.plugins.starteam.StarTeamSCM#getViewname()
+	 * @see StarTeamSCM#getViewname()
 	 */
 	@Test
 	public void testGetViewname() {
@@ -273,7 +273,7 @@ public class StarTeamSCMTest extends HudsonTestCase {
 	/*
 	 * Get the root folder name of our monitored workspace.
 	 * 
-	 * @see hudson.plugins.starteam.StarTeamSCM#getFoldername()
+	 * @see StarTeamSCM#getFoldername()
 	 */
 	@Test
 	public void testGetFoldername() {
@@ -283,7 +283,7 @@ public class StarTeamSCMTest extends HudsonTestCase {
 	/*
 	 * Get the username used to connect to starteam.
 	 * 
-	 * @see hudson.plugins.starteam.StarTeamSCM#getUsername()
+	 * @see StarTeamSCM#getUsername()
 	 */
 	@Test
 	public void testGetUsername() {
@@ -293,7 +293,7 @@ public class StarTeamSCMTest extends HudsonTestCase {
 	/*
 	 * Get the password used to connect to starteam.
 	 * 
-	 * @see hudson.plugins.starteam.StarTeamSCM#getPassword()
+	 * @see StarTeamSCM#getPassword()
 	 */
 	@Test
 	public void testGetPassword() {

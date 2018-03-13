@@ -1,7 +1,7 @@
 /**
  *
  */
-package hudson.plugins.starteam;
+package hudson.plugins.starteam.community;
 
 import com.starteam.Label;
 import com.starteam.PromotionState;

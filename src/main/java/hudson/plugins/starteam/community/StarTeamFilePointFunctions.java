@@ -1,4 +1,4 @@
-package hudson.plugins.starteam;
+package hudson.plugins.starteam.community;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;

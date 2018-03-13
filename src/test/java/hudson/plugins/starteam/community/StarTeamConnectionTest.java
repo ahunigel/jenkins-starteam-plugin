@@ -1,4 +1,4 @@
-package hudson.plugins.starteam;
+package hudson.plugins.starteam.community;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -19,7 +19,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.starteam.exceptions.DuplicateServerListEntryException;
 import com.starteam.ServerInfo;
 
 /**

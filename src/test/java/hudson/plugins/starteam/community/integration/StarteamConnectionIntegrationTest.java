@@ -1,12 +1,12 @@
-package hudson.plugins.starteam.integration;
+package hudson.plugins.starteam.community.integration;
 
-import hudson.plugins.starteam.StarTeamChangeLogEntry;
-import hudson.plugins.starteam.StarTeamChangeSet;
-import hudson.plugins.starteam.StarTeamConnection;
-import hudson.plugins.starteam.StarTeamFilePoint;
-import hudson.plugins.starteam.StarTeamFunctions;
-import hudson.plugins.starteam.StarTeamSCMException;
-import hudson.plugins.starteam.StarTeamViewSelector;
+import hudson.plugins.starteam.community.StarTeamChangeLogEntry;
+import hudson.plugins.starteam.community.StarTeamChangeSet;
+import hudson.plugins.starteam.community.StarTeamConnection;
+import hudson.plugins.starteam.community.StarTeamFilePoint;
+import hudson.plugins.starteam.community.StarTeamFunctions;
+import hudson.plugins.starteam.community.StarTeamSCMException;
+import hudson.plugins.starteam.community.StarTeamViewSelector;
 
 import java.io.File;
 import java.io.IOException;

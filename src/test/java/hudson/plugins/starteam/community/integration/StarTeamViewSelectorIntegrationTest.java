@@ -1,9 +1,9 @@
-package hudson.plugins.starteam.integration;
+package hudson.plugins.starteam.community.integration;
 
-import hudson.plugins.starteam.StarTeamConnection;
-import hudson.plugins.starteam.StarTeamFunctions;
-import hudson.plugins.starteam.StarTeamSCMException;
-import hudson.plugins.starteam.StarTeamViewSelector;
+import hudson.plugins.starteam.community.StarTeamConnection;
+import hudson.plugins.starteam.community.StarTeamFunctions;
+import hudson.plugins.starteam.community.StarTeamSCMException;
+import hudson.plugins.starteam.community.StarTeamViewSelector;
 
 import java.io.File;
 import java.text.ParseException;
