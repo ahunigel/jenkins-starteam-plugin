@@ -13,6 +13,9 @@ import java.util.*;
 
 public class StarTeamFilePointFunctions {
 
+  private StarTeamFilePointFunctions() {
+    throw new InstantiationError();
+  }
   // projection and collection conversion
 
   /**
@@ -32,7 +35,7 @@ public class StarTeamFilePointFunctions {
    * @param collection Collection of StarTeam files
    * @return collection of FilePoints - information vector needed keeping track of file status
    */
-  public static Collection<StarTeamFilePoint> convertFilePointCollection(final Collection<com.starteam.File> collection) throws IOException {
+  public static Collection<StarTeamFilePoint> convertFilePointCollection(final Collection<com.starteam.File> collection) {
     Collection<StarTeamFilePoint> result = new ArrayList<StarTeamFilePoint>();
     for (com.starteam.File f : collection) {
       result.add(new StarTeamFilePoint(f));
@@ -40,7 +43,8 @@ public class StarTeamFilePointFunctions {
     return result;
   }
 
-  public static Collection<StarTeamFilePoint> extractFilePointSubCollection(final Map<java.io.File, StarTeamFilePoint> map, final Collection<java.io.File> collection) {
+  public static Collection<StarTeamFilePoint> extractFilePointSubCollection(final Map<java.io.File, StarTeamFilePoint> map,
+                                                                            final Collection<java.io.File> collection) {
     Collection<StarTeamFilePoint> result = new ArrayList<StarTeamFilePoint>();
     for (java.io.File f : collection) {
       result.add(map.get(f));
@@ -105,7 +109,7 @@ public class StarTeamFilePointFunctions {
     Collection<StarTeamFilePoint> result = new ArrayList<StarTeamFilePoint>();
     for (String str : stringCollection) {
 
-      String data[] = str.split(",");
+      String[] data = str.split(",");
 
       String revision = data[0];
       String lastModifyTime = data[1];

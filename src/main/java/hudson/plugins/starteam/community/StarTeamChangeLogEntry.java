@@ -120,14 +120,14 @@ public class StarTeamChangeLogEntry extends hudson.scm.ChangeLogSet.Entry {
 
   @Override
   public String toString() {
-    final StringBuffer buffer = new StringBuffer();
-    buffer.append("file: ").append(fileName);
-    buffer.append(" revision: ").append(revisionNumber);
-    buffer.append(" date: ").append(date);
-    buffer.append(" changeType: ").append(changeType);
-    buffer.append(" user: ").append(username);
-    buffer.append(" mgs: ").append(msg);
-    return buffer.toString();
+    final StringBuilder builder = new StringBuilder();
+    builder.append("file: ").append(fileName);
+    builder.append(" revision: ").append(revisionNumber);
+    builder.append(" date: ").append(date);
+    builder.append(" changeType: ").append(changeType);
+    builder.append(" user: ").append(username);
+    builder.append(" mgs: ").append(msg);
+    return builder.toString();
   }
 
   /**

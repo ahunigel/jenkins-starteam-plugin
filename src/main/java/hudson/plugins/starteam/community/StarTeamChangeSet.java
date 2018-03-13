@@ -78,8 +78,8 @@ public class StarTeamChangeSet {
 
   @Override
   public String toString() {
-    final StringBuffer buffer = new StringBuffer();
-    buffer.append(" changes: ").append(changes.size());
-    return buffer.toString();
+    final StringBuilder builder = new StringBuilder();
+    builder.append(" changes: ").append(changes.size());
+    return builder.toString();
   }
 }

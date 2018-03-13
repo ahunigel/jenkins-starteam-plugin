@@ -45,7 +45,7 @@ public class StarTeamChangeLogParser extends ChangeLogParser {
    * @return the change log set
    */
   public static StarTeamChangeLogSet parse(AbstractBuild aBuild,
-                                           InputStream aChangeLogStream) throws IOException, SAXException {
+                                           InputStream aChangeLogStream) throws IOException {
     return parse0(aBuild, aChangeLogStream, null);
   }
 
@@ -55,14 +55,11 @@ public class StarTeamChangeLogParser extends ChangeLogParser {
         protected SimpleDateFormat initialValue() {
           return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         }
-
-        ;
       };
 
   @SuppressWarnings("unchecked")
   private static StarTeamChangeLogSet parse0(AbstractBuild aBuild,
-                                             InputStream aChangeLogStream, String filePath) throws IOException,
-      SAXException {
+                                             InputStream aChangeLogStream, String filePath) throws IOException {
 
     ArrayList<StarTeamChangeLogEntry> changeLogEntries =
         new ArrayList<StarTeamChangeLogEntry>();

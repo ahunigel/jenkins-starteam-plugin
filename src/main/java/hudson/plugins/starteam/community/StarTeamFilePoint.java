@@ -49,11 +49,15 @@ public class StarTeamFilePoint implements Serializable, Comparable {
 
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
 
     StarTeamFilePoint that = (StarTeamFilePoint) o;
 
-    if (fullfilepath != null ? !fullfilepath.equals(that.fullfilepath) : that.fullfilepath != null) return false;
+    if (fullfilepath != null ? !fullfilepath.equals(that.fullfilepath) : that.fullfilepath != null) {
+      return false;
+    }
 
     return true;
   }
@@ -74,11 +78,11 @@ public class StarTeamFilePoint implements Serializable, Comparable {
 
   @Override
   public String toString() {
-    final StringBuffer buffer = new StringBuffer();
-    buffer.append("file: ").append(fullfilepath);
-    buffer.append(" revision: ").append(revisionnumber);
-    buffer.append("lastModifyDate:").append(new Date(lastModifyDate));
-    return buffer.toString();
+    final StringBuilder builder = new StringBuilder();
+    builder.append("file: ").append(fullfilepath);
+    builder.append(" revision: ").append(revisionnumber);
+    builder.append("lastModifyDate:").append(new Date(lastModifyDate));
+    return builder.toString();
   }
 
 }

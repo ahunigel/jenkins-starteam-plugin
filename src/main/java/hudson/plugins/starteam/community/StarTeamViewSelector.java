@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 public class StarTeamViewSelector implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  private final static Pattern labelPattern = Pattern.compile("%\\{(.*?):BUILD_NUMBER\\}");
+  private static final Pattern labelPattern = Pattern.compile("%\\{(.*?):BUILD_NUMBER\\}");
 
   /**
    * Current: view brings the most recent or "tip" versions of items,
@@ -36,8 +36,6 @@ public class StarTeamViewSelector implements Serializable {
   enum ConfigType {
     CURRENT, LABEL, TIME, PROMOTION
   }
-
-  ;
 
   private final String configInfo;       // configuration information Label name, Promotion State name or date
   private final ConfigType configType;   // type of configuration.
@@ -149,12 +147,11 @@ public class StarTeamViewSelector implements Serializable {
     throw new StarTeamSCMException("Couldn't find label [" + labelname + "] in view " + view.getName());
   }
 
-  private static Label createLabelInView(final View view, final String labelName, final int buildNumber) throws StarTeamSCMException {
+  private static Label createLabelInView(final View view, final String labelName, final int buildNumber) {
     final String labelDesc = String.format("Jenkins build %d", buildNumber);
     final boolean buildLabel = true;
     final boolean frozen = true;
-    Label label = view.createViewLabel(labelName, labelDesc, DateTime.CURRENT_SERVER_TIME, buildLabel, frozen);
-    return label;
+    return view.createViewLabel(labelName, labelDesc, DateTime.CURRENT_SERVER_TIME, buildLabel, frozen);
   }
 
   private static PromotionState findPromotionStateInView(final View view, final String promotionState) throws StarTeamSCMException {

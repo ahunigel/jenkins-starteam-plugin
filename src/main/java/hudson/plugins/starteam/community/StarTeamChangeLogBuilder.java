@@ -21,6 +21,10 @@ import java.util.GregorianCalendar;
  */
 public final class StarTeamChangeLogBuilder {
 
+  private StarTeamChangeLogBuilder() {
+    throw new InstantiationError();
+  }
+
   /**
    * Stores the history objects to the output stream as xml.
    * <p>
@@ -46,8 +50,7 @@ public final class StarTeamChangeLogBuilder {
    * @throws IOException
    */
   public static boolean writeChangeLog(OutputStream outputStream,
-                                       StarTeamChangeSet changeSet)
-      throws IOException {
+                                       StarTeamChangeSet changeSet) {
 
     GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance();
 

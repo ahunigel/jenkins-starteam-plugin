@@ -65,7 +65,8 @@ public class StarTeamPollingActor implements FileCallable<Boolean> {
    */
   public StarTeamPollingActor(String hostname, int port, String agentHost, int agentPort, String user,
                               String passwd, String projectname, String viewname,
-                              String foldername, StarTeamViewSelector config, TaskListener listener, Collection<StarTeamFilePoint> historicFilePoints) {
+                              String foldername, StarTeamViewSelector config, TaskListener listener,
+                              Collection<StarTeamFilePoint> historicFilePoints) {
     this.hostname = hostname;
     this.port = port;
     this.agenthost = agentHost;
@@ -102,7 +103,7 @@ public class StarTeamPollingActor implements FileCallable<Boolean> {
     StarTeamChangeSet changeSet = null;
     try {
       changeSet = connection.computeChangeSet(connection.getRootFolder(), f, historicFilePoints, listener.getLogger());
-    } catch (StarTeamSCMException e) {
+    } catch (Exception e) {
       e.printStackTrace(listener.getLogger());
     }
     connection.close();

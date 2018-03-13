@@ -484,8 +484,8 @@ public class StarTeamConnection implements Serializable {
    * @throws IOException
    */
   public StarTeamChangeSet computeChangeSet(Folder rootFolder, java.io.File workspace,
-                                            final Collection<StarTeamFilePoint> historicFilePoints, PrintStream logger) throws StarTeamSCMException,
-      IOException {
+                                            final Collection<StarTeamFilePoint> historicFilePoints,
+                                            PrintStream logger) throws IOException {
     // --- compute changes as per starteam
     long start = System.currentTimeMillis();
     long st = start;
@@ -541,21 +541,20 @@ public class StarTeamConnection implements Serializable {
           }
         }
         result.add(file);
-        changeSet.addChange(FileToStarTeamChangeLogEntry(file));
+        changeSet.addChange(fileToStarTeamChangeLogEntry(file));
       }
       changeSet.setFilesToCheckout(result);
     }
     logger.println("*** " + sdf.format(new Date()) + " compute ChangeSet computeDifference took " + (System.currentTimeMillis() - st) + " ms.");
-    st = System.currentTimeMillis();
     logger.println("*** " + sdf.format(new Date()) + " compute ChangeSet took " + (System.currentTimeMillis() - start) + " ms.");
     return changeSet;
   }
 
-  public StarTeamChangeLogEntry FileToStarTeamChangeLogEntry(File f) {
-    return FileToStarTeamChangeLogEntry(f, "change");
+  public StarTeamChangeLogEntry fileToStarTeamChangeLogEntry(File f) {
+    return fileToStarTeamChangeLogEntry(f, "change");
   }
 
-  public StarTeamChangeLogEntry FileToStarTeamChangeLogEntry(File f, String change) {
+  public StarTeamChangeLogEntry fileToStarTeamChangeLogEntry(File f, String change) {
     int revisionNumber = VersionedObject.getViewVersion(f.getDotNotation());
     String username = getUsername(f.getModifiedBy());
     String msg = f.getComment();
@@ -600,12 +599,12 @@ public class StarTeamConnection implements Serializable {
       com.starteam.File stf = starteamFileMap.get(f);
       if (starteam.getRevisionNumber() > historic.getRevisionNumber()) {
         // higher.add(f);
-        changeSet.addChange(FileToStarTeamChangeLogEntry(stf, "change"));
+        changeSet.addChange(fileToStarTeamChangeLogEntry(stf, "change"));
       } else if (starteam.getRevisionNumber() < historic.getRevisionNumber()) {
         // lower.add(f);
-        changeSet.addChange(FileToStarTeamChangeLogEntry(stf, "rollback"));
+        changeSet.addChange(fileToStarTeamChangeLogEntry(stf, "rollback"));
       } else {
-        changeSet.addChange(FileToStarTeamChangeLogEntry(stf, "change"));
+        changeSet.addChange(fileToStarTeamChangeLogEntry(stf, "change"));
       }
       fileToCheckout.add(stf);
     }
@@ -617,7 +616,7 @@ public class StarTeamConnection implements Serializable {
     }
     for (java.io.File f : starteamOnly) {
       com.starteam.File stf = starteamFileMap.get(f);
-      changeSet.addChange(FileToStarTeamChangeLogEntry(stf, "added"));
+      changeSet.addChange(fileToStarTeamChangeLogEntry(stf, "added"));
       fileToCheckout.add(stf);
     }
     changeSet.setFilesToCheckout(fileToCheckout);
