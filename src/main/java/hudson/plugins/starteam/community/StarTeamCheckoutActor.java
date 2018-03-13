@@ -108,8 +108,7 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
    * @see hudson.FilePath.FileCallable#invoke(java.io.File,
    *      hudson.remoting.VirtualChannel)
    */
-  public Boolean invoke(File workspace, VirtualChannel channel)
-      throws IOException {
+  public Boolean invoke(File workspace, VirtualChannel channel) {
     Long start = System.currentTimeMillis();
     listener.getLogger().println("Initializing StarTeam connection ...");
     StarTeamConnection connection = new StarTeamConnection(
