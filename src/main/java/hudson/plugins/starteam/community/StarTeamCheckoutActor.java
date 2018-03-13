@@ -142,9 +142,6 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
       } catch (InterruptedException e) {
         listener.getLogger().println("unable to create changelog file " + e.getMessage());
       }
-    } catch (StarTeamSCMException e1) {
-      e1.printStackTrace(listener.getLogger());
-      return false;
     } catch (Exception e) {
       e.printStackTrace(listener.getLogger());
       return false;
