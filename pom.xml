@@ -203,7 +203,7 @@
   </dependencies>
 
   <build>
-    <finalName>starteam</finalName>
+    <finalName>starteam-community</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
