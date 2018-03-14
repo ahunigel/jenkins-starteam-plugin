@@ -164,18 +164,8 @@
     <dependency>
       <groupId>com.borland.starteam</groupId>
       <artifactId>starteam</artifactId>
-      <version>14.0.76</version>
+      <version>16.0.47</version>
     </dependency>
-    <dependency>
-      <groupId>com.rsa</groupId>
-      <artifactId>jsafe</artifactId>
-      <version>3.5</version>
-    </dependency>
-    <!--<dependency>
-      <groupId>com.borland</groupId>
-      <artifactId>ss</artifactId>
-      <version>14.0</version>
-    </dependency>-->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
