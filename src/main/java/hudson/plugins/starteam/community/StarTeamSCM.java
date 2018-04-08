@@ -104,7 +104,7 @@ public class StarTeamSCM extends SCM {
   public boolean checkout(AbstractBuild build, Launcher launcher,
                           FilePath workspace, BuildListener listener, File changelogFile)
       throws IOException, InterruptedException {
-    boolean status = false;
+    boolean status;
 
     //create a FilePath to be able to create changelog file on a remote computer.
     FilePath changeLogFilePath = new FilePath(changelogFile);
@@ -211,7 +211,7 @@ public class StarTeamSCM extends SCM {
       // according to those parameters.
       StarTeamSCM scm = null;
       try {
-        scm = req.bindParameters(StarTeamSCM.class, "starteam.");
+        scm = req.bindParameters(StarTeamSCM.class, "starteam.community.");
         scms.add(scm);
       } catch (RuntimeException e) {
         LOGGER.log(SEVERE, e.getMessage(), e);
