@@ -7,7 +7,9 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
-import hudson.scm.*;
+import hudson.scm.ChangeLogParser;
+import hudson.scm.SCM;
+import hudson.scm.SCMDescriptor;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
@@ -145,7 +147,6 @@ public class StarTeamSCM extends SCM {
   @Override
   public StarTeamSCMDescriptorImpl getDescriptor() {
     return DESCRIPTOR;
-//		return (StarTeamSCMDescriptorImpl)super.getDescriptor();
   }
 
   /*
@@ -324,15 +325,4 @@ public class StarTeamSCM extends SCM {
     return cacheagentport;
   }
 
-  @Override
-  protected PollingResult compareRemoteRevisionWith(AbstractProject<?, ?> abstractProject, Launcher launcher, FilePath filePath, TaskListener taskListener, SCMRevisionState scmRevisionState) throws IOException, InterruptedException {
-    // TODO: 3/12/2018 implement the compareRemoteRevisionWith method
-    return null;
-  }
-
-  @Override
-  public SCMRevisionState calcRevisionsFromBuild(AbstractBuild<?, ?> abstractBuild, Launcher launcher, TaskListener taskListener) throws IOException, InterruptedException {
-    // TODO: 3/12/2018 implement the calcRevisionsFromBuild method
-    return null;
-  }
 }

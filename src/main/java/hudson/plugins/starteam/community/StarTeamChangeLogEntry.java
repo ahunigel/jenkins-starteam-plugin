@@ -2,7 +2,6 @@ package hudson.plugins.starteam.community;
 
 import hudson.model.User;
 import hudson.scm.ChangeLogSet;
-import hudson.tasks.Mailer;
 
 import java.util.Collection;
 import java.util.Date;
@@ -61,7 +60,6 @@ public class StarTeamChangeLogEntry extends hudson.scm.ChangeLogSet.Entry {
   public User getAuthor() {
     User user = User.get(username);
     user.setFullName("");
-    new Mailer.UserProperty("");
 
     return user;
   }

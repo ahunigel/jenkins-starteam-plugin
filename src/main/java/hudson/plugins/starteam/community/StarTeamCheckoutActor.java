@@ -6,6 +6,7 @@ import hudson.FilePath.FileCallable;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.remoting.VirtualChannel;
+import org.jenkinsci.remoting.RoleChecker;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -59,8 +60,8 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
    */
   public StarTeamCheckoutActor(String hostname, int port, String agentHost, int agentPort, String user,
                                String passwd, String projectname, String viewname,
-                               String foldername, StarTeamViewSelector config, FilePath changelogFile, BuildListener listener,
-                               AbstractBuild<?, ?> build, FilePath filePointFilePath) {
+                               String foldername, StarTeamViewSelector config, FilePath changelogFile,
+                               BuildListener listener, AbstractBuild<?, ?> build, FilePath filePointFilePath) {
     this.hostname = hostname;
     this.port = port;
     this.agenthost = agentHost;
@@ -87,19 +88,19 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
     // that is needed (historicFilePoints) is stored.
 
     // Get a list of files that require updating
-    Collection<StarTeamFilePoint> historicFilePoints = null;
+    Collection<StarTeamFilePoint> starTeamFilePoints = null;
     AbstractBuild<?, ?> lastBuild = (build == null) ? null : build.getPreviousBuild();
     if (lastBuild != null) {
       try {
         File filePointFile = new File(lastBuild.getRootDir(), StarTeamConnection.FILE_POINT_FILENAME);
         if (filePointFile.exists()) {
-          historicFilePoints = StarTeamFilePointFunctions.loadCollection(filePointFile);
+          starTeamFilePoints = StarTeamFilePointFunctions.loadCollection(filePointFile);
         }
       } catch (IOException e) {
         e.printStackTrace(listener.getLogger());
       }
     }
-    this.historicFilePoints = historicFilePoints;
+    this.historicFilePoints = starTeamFilePoints;
   }
 
   /*
@@ -140,6 +141,7 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
             connection);
       } catch (InterruptedException e) {
         listener.getLogger().println("unable to create changelog file " + e.getMessage());
+        Thread.currentThread().interrupt();
       }
     } catch (Exception e) {
       e.printStackTrace(listener.getLogger());
@@ -225,4 +227,8 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
     }
   }
 
+  @Override
+  public void checkRoles(RoleChecker roleChecker) throws SecurityException {
+
+  }
 }

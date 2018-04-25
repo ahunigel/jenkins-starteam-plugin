@@ -6,6 +6,7 @@ package hudson.plugins.starteam.community;
 import hudson.FilePath.FileCallable;
 import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
+import org.jenkinsci.remoting.RoleChecker;
 
 import java.io.File;
 import java.io.IOException;
@@ -107,10 +108,11 @@ public class StarTeamPollingActor implements FileCallable<Boolean> {
       e.printStackTrace(listener.getLogger());
     }
     connection.close();
-    if (changeSet != null && changeSet.hasChanges()) {
-      return true;
-    }
-    return false;
+    return changeSet != null && changeSet.hasChanges();
   }
 
+  @Override
+  public void checkRoles(RoleChecker roleChecker) throws SecurityException {
+
+  }
 }
