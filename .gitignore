@@ -51,3 +51,4 @@ target/
 *.iml
 .svn/
 /hudson-temp-directory/
+work
