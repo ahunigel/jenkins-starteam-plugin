@@ -13,6 +13,7 @@ import com.starteam.exceptions.LogonException;
 import com.starteam.util.DateTime;
 import com.starteam.util.MD5;
 import hudson.FilePath;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.text.NumberFormat;
@@ -86,7 +87,8 @@ public class StarTeamConnection implements Serializable {
   }
 
   public StarTeamConnection(String hostName, int port, String agentHost, int agentPort, String userName,
-                            String password, String projectName, String viewName, String folderName, StarTeamViewSelector configSelector) {
+                            String password, String projectName, String viewName, String folderName,
+                            StarTeamViewSelector configSelector) {
     checkParameters(hostName, port, userName, password, projectName, viewName, folderName);
     this.hostName = hostName;
     this.port = port;
@@ -239,18 +241,18 @@ public class StarTeamConnection implements Serializable {
     coOptions.setTimeStampNow(false);
     coOptions.setForceCheckout(true);
     coOptions.setMarkUnlockedFilesReadOnly(false);
-    CheckoutManager com = view.createCheckoutManager(coOptions);
-    if (com.getView().getProject().getServer().getServerInfo().getEnableCacheAgentForFileContent()) {
+    CheckoutManager coManager = view.createCheckoutManager(coOptions);
+    if (coManager.getView().getProject().getServer().getServerInfo().getEnableCacheAgentForFileContent()) {
       logger.println("*** " + sdf.format(new Date()) + " Enabled cache agent for file content.");
     }
     CheckoutListenerImpl colistener = new CheckoutListenerImpl(logger);
     colistener.setUpdateLastModifyDate(!coOptions.getTimeStampNow());
-    com.addCheckoutListener(colistener);
+    coManager.addCheckoutListener(colistener);
 
-    com.checkout(filesToCheckout.toArray(new File[0]));
-    if (com.canCommit()) {
+    coManager.checkout(filesToCheckout.toArray(new File[0]));
+    if (coManager.canCommit()) {
       logger.println("*** " + sdf.format(new Date()) + " checked out request commit");
-      com.commit();
+      coManager.commit();
       logger.println("*** " + sdf.format(new Date()) + " checked out request committed");
     } else {
       logger.println("*** " + sdf.format(new Date()) + " checked out not commit");
@@ -259,12 +261,16 @@ public class StarTeamConnection implements Serializable {
     logger.println("*** " + sdf.format(new Date()) + " removing [" + changeSet.getFilesToRemove().size() + "] files");
     boolean quietDelete = changeSet.getFilesToRemove().size() > 100;
     if (quietDelete) {
-      logger.println("*** " + sdf.format(new Date()) + " More than 100 files, quiet mode enabled");
+      java.io.File file = new java.io.File("starteam-remove-files.txt");
+      logger.println("*** " + sdf.format(new Date()) + " More than 100 files, quiet mode enabled, see " + file + " for " +
+          "details");
+      FileUtils.writeLines(file, changeSet.getFilesToRemove());
     }
     for (java.io.File f : changeSet.getFilesToRemove()) {
       if (f.exists()) {
-        if (!quietDelete)
+        if (!quietDelete) {
           logger.println("*** " + sdf.format(new Date()) + " [remove] [" + f + "]");
+        }
         f.delete();
       } else {
         logger.println("*** " + sdf.format(new Date()) + " [remove:warn] Planned to remove [" + f + "]");
@@ -350,11 +356,11 @@ public class StarTeamConnection implements Serializable {
    * {@link Item#getModifiedBy()} property, to determine the name of the user
    * who made a modification to the item.
    *
-   * @param userId the id of the user on the StarTeam Server
+   * @param stUser the id of the user on the StarTeam Server
    * @return the name of the user as provided by the StarTeam Server
    */
   public String getUsername(User stUser) {
-    String userName = stUser.getName();
+    String stUserName = stUser.getName();
     ServerAdministration srvAdmin = server.getAdministration();
     User[] userAccts = null;
     if (canReadUserAccts) {
@@ -370,23 +376,23 @@ public class StarTeamConnection implements Serializable {
     if (userAccts != null) {
       for (int i = 0; i < userAccts.length; i++) {
         User ua = userAccts[i];
-        if (ua.getName().equals(userName)) {
-          // System.out.println("INFO: From \'" + userName +
+        if (ua.getName().equals(stUserName)) {
+          // System.out.println("INFO: From \'" + stUserName +
           // "\' found existing user LogonName = " +
           // ua.getLogOnName() + " with ID \'" + ua.getID() + "\' and email \'"
           // + ua.getEmailAddress() +"\'");
-          int index = ua.getEmailAddress().indexOf("@");
+          int index = ua.getEmailAddress().indexOf('@');
           if (index > -1) {
-            return ua.getEmailAddress().substring(0, ua.getEmailAddress().indexOf("@"));
+            return ua.getEmailAddress().substring(0, ua.getEmailAddress().indexOf('@'));
           }
         }
       }
     } else {
       // Since the user account running the build does not have user admin perms
       // use the User Full Name
-      return userName;
+      return stUserName;
     }
-    return userName;
+    return stUserName;
   }
 
   public Folder getRootFolder() {
@@ -489,25 +495,25 @@ public class StarTeamConnection implements Serializable {
     // --- compute changes as per starteam
     long start = System.currentTimeMillis();
     long st = start;
-    final Collection<com.starteam.File> starteamFiles = StarTeamFunctions.listAllFiles(rootFolder, workspace);
+    final Collection<com.starteam.File> starTeamFiles = StarTeamFunctions.listAllFiles(rootFolder, workspace);
     logger.println("*** " + sdf.format(new Date()) + " compute ChangeSet listAllFiles took " + (System.currentTimeMillis() - st) + " ms.");
     st = System.currentTimeMillis();
-    final Map<java.io.File, com.starteam.File> starteamFileMap = StarTeamFunctions.convertToFileMap(starteamFiles);
+    final Map<java.io.File, com.starteam.File> starteamFileMap = StarTeamFunctions.convertToFileMap(starTeamFiles);
 
-    final Collection<java.io.File> starteamFileSet = starteamFileMap.keySet();
-    final Collection<StarTeamFilePoint> starteamFilePoint = StarTeamFilePointFunctions
-        .convertFilePointCollection(starteamFiles);
+    final Collection<java.io.File> starTeamFileSet = starteamFileMap.keySet();
+    final Collection<StarTeamFilePoint> starTeamFilePoint = StarTeamFilePointFunctions
+        .convertFilePointCollection(starTeamFiles);
     logger.println("*** " + sdf.format(new Date()) + " compute ChangeSet convertToFileMap took " + (System.currentTimeMillis() - st) + " ms.");
     st = System.currentTimeMillis();
     final Collection<java.io.File> fileSystemFiles = StarTeamFilePointFunctions.listAllFiles(workspace);
     final Collection<java.io.File> fileSystemRemove = new TreeSet<java.io.File>(fileSystemFiles);
-    fileSystemRemove.removeAll(starteamFileSet);
+    fileSystemRemove.removeAll(starTeamFileSet);
 
     final StarTeamChangeSet changeSet = new StarTeamChangeSet();
 
     changeSet.setFilesToRemove(fileSystemRemove);
-    changeSet.setFilePointsToRemember(starteamFilePoint);
-    // changeSet.setFilesToCheckout(starteamFiles);
+    changeSet.setFilePointsToRemember(starTeamFilePoint);
+    // changeSet.setFilesToCheckout(starTeamFiles);
     // --- compute differences as per historic storage file
     logger.println("*** " + sdf.format(new Date()) + " compute ChangeSet changeSet took " + (System.currentTimeMillis() - st) + " ms.");
     st = System.currentTimeMillis();
@@ -517,7 +523,7 @@ public class StarTeamConnection implements Serializable {
 
         changeSet.setComparisonAvailable(true);
         logger.println("*** " + sdf.format(new Date()) + " compute Difference from historic file points.");
-        computeDifference(starteamFilePoint, historicFilePoints, changeSet, starteamFileMap, fileSystemFiles, logger);
+        computeDifference(starTeamFilePoint, historicFilePoints, changeSet, starteamFileMap, fileSystemFiles, logger);
 
       } catch (Throwable t) {
         t.printStackTrace(logger);
@@ -527,17 +533,17 @@ public class StarTeamConnection implements Serializable {
       logger.println("*** " + sdf.format(new Date()) + " compute Difference add all star team files.");
       Collection<File> result = new ArrayList<File>();
       MD5 localFileMD5 = new MD5();
-      for (File file : starteamFiles) {
-        MD5 starteamFileMD5 = file.getMD5();
+      for (File file : starTeamFiles) {
+        MD5 starTeamFileMD5 = file.getMD5();
 
         java.io.File localFile = new java.io.File(file.getFullName());
 
         if (localFile.exists()) {
           localFileMD5.computeFileMD5(localFile);
-          if (file.getContentModifiedTime().toJavaMsec() == localFile.lastModified() || starteamFileMD5.equals(localFileMD5)) {
+          if (file.getContentModifiedTime().toJavaMsec() == localFile.lastModified() || starTeamFileMD5.equals(localFileMD5)) {
             continue;
           } else {
-            logger.println(" File " + file.getFullName() + "\n  localfileMD5:" + localFileMD5 + "\n  starteam MD5:" + starteamFileMD5);
+            logger.println(" File " + file.getFullName() + "\n  localfileMD5:" + localFileMD5 + "\n  starteam MD5:" + starTeamFileMD5);
           }
         }
         result.add(file);
@@ -546,6 +552,7 @@ public class StarTeamConnection implements Serializable {
       changeSet.setFilesToCheckout(result);
     }
     logger.println("*** " + sdf.format(new Date()) + " compute ChangeSet computeDifference took " + (System.currentTimeMillis() - st) + " ms.");
+    logger.println("*** " + sdf.format(new Date()) + " compute ChangeSet found " + changeSet.getChanges().size() + " changes.");
     logger.println("*** " + sdf.format(new Date()) + " compute ChangeSet took " + (System.currentTimeMillis() - start) + " ms.");
     return changeSet;
   }
@@ -565,8 +572,12 @@ public class StarTeamConnection implements Serializable {
   }
 
   public StarTeamChangeSet computeDifference(final Collection<StarTeamFilePoint> currentFilePoint,
-                                             final Collection<StarTeamFilePoint> historicFilePoint, StarTeamChangeSet changeSet,
-                                             Map<java.io.File, com.starteam.File> starteamFileMap, Collection<java.io.File> filesOnDisk, PrintStream logger) {
+                                             final Collection<StarTeamFilePoint> historicFilePoint,
+                                             StarTeamChangeSet changeSet,
+                                             Map<java.io.File, com.starteam.File> starteamFileMap,
+                                             Collection<java.io.File> filesOnDisk,
+                                             PrintStream logger) {
+
     logger.println("*** " + sdf.format(new Date()) + " computeDifference start.");
     final Map<java.io.File, StarTeamFilePoint> starteamFilePointMap = StarTeamFilePointFunctions
         .convertToFilePointMap(currentFilePoint);
@@ -611,7 +622,8 @@ public class StarTeamConnection implements Serializable {
 
     for (java.io.File f : historicOnly) {
       StarTeamFilePoint historic = historicFilePointMap.get(f);
-      change = new StarTeamChangeLogEntry(f.getName(), historic.getRevisionNumber(), new Date(), "Unknow", "file deleted", "removed");
+      change = new StarTeamChangeLogEntry(f.getName(), historic.getRevisionNumber(), new Date(),
+          "Unknown", "file deleted", "removed");
       changeSet.addChange(change);
     }
     for (java.io.File f : starteamOnly) {

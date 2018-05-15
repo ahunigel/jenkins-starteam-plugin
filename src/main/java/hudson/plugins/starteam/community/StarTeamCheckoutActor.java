@@ -137,8 +137,7 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
 
       listener.getLogger().println("creating change log file ");
       try {
-        createChangeLog(changeSet, workspace, changelog, listener,
-            connection);
+        createChangeLog(changeSet, workspace, changelog, listener, connection);
       } catch (InterruptedException e) {
         listener.getLogger().println("unable to create changelog file " + e.getMessage());
         Thread.currentThread().interrupt();
@@ -172,17 +171,13 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
 
     // create empty change log during call.
     if (changes == null) {
-      listener
-          .getLogger()
-          .println(
-              "last build date is null, creating an empty change log file");
+      listener.getLogger().println("last build date is null, creating an empty change log file");
       createEmptyChangeLog(aChangelogFile, aListener, "log");
       return true;
     }
 
 
-    OutputStream os = new BufferedOutputStream(
-        aChangelogFile.write());
+    OutputStream os = new BufferedOutputStream(aChangelogFile.write());
 
     boolean created = false;
     try {
@@ -195,8 +190,9 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
       os.close();
     }
 
-    if (!created)
+    if (!created) {
       createEmptyChangeLog(aChangelogFile, aListener, "log");
+    }
 
     return true;
   }
@@ -210,8 +206,8 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
    * @return
    * @throws InterruptedException
    */
-  protected final boolean createEmptyChangeLog(FilePath aChangelogFile,
-                                               BuildListener aListener, String aRootTag) throws InterruptedException {
+  protected final boolean createEmptyChangeLog(FilePath aChangelogFile, BuildListener aListener, String aRootTag)
+      throws InterruptedException {
     try {
       OutputStreamWriter writer = new OutputStreamWriter(aChangelogFile.write(),
           Charset.forName("UTF-8"));
