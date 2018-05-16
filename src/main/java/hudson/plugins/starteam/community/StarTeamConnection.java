@@ -232,7 +232,10 @@ public class StarTeamConnection implements Serializable {
     filesToCheckout.addAll(changeSet.getFilesToCheckout());
     boolean quietCheckout = filesToCheckout.size() >= 2000;
     if (quietCheckout) {
-      logger.println("*** " + sdf.format(new Date()) + "  More than 2000 files, quiet mode enabled");
+      java.io.File file = new java.io.File("starteam-checkout-files.txt");
+      logger.println("*** " + sdf.format(new Date()) + "  More than 2000 files, quiet mode enabled" +
+          ", see " + file.getAbsolutePath() + " for " + "details");
+      FileUtils.writeLines(file, filesToCheckout);
     }
     com.starteam.CheckoutOptions coOptions = new com.starteam.CheckoutOptions(view);
     coOptions.setLockType(Item.LockType.UNLOCKED);
@@ -262,8 +265,8 @@ public class StarTeamConnection implements Serializable {
     boolean quietDelete = changeSet.getFilesToRemove().size() > 100;
     if (quietDelete) {
       java.io.File file = new java.io.File("starteam-remove-files.txt");
-      logger.println("*** " + sdf.format(new Date()) + " More than 100 files, quiet mode enabled, see " + file + " for " +
-          "details");
+      logger.println("*** " + sdf.format(new Date()) + " More than 100 files, quiet mode enabled" +
+          ", see " + file.getAbsolutePath() + " for " + "details");
       FileUtils.writeLines(file, changeSet.getFilesToRemove());
     }
     for (java.io.File f : changeSet.getFilesToRemove()) {

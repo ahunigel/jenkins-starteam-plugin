@@ -53,7 +53,7 @@ public class StarteamConnectionIntegrationTest {
 		String hostName = System.getProperty("test.starteam.hostname", "starteamserver.ers.na.emersonclimate.org");
 		int port = Integer.parseInt(System.getProperty("test.starteam.hostport", "49201")); 
 		String projectName = System.getProperty("test.starteam.projectname", "JARU");
-		String viewName = System.getProperty("test.starteam.viewname", ".16.3.0 from Merged 16.2.0B09 Plugins 16.2.0B11");
+		String viewName = System.getProperty("test.starteam.viewname", ".G2 1.1 new feature");
 		String folderName = System.getProperty("test.starteam.foldername", "JARU/Software/JaruPlugins/ProActRMS");
 		String userName = System.getProperty("test.starteam.username", "automated_build");
 		String password = System.getProperty("test.starteam.password", "auto");
