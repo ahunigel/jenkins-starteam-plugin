@@ -47,6 +47,7 @@ public class StarTeamConnection implements Serializable {
   private final String agentHost;
   private final int agentPort;
   private final StarTeamViewSelector configSelector;
+  private final boolean cleanupstate;
 
   private transient Server server;
   private transient View view;
@@ -83,12 +84,12 @@ public class StarTeamConnection implements Serializable {
    */
   public StarTeamConnection(String hostName, int port, String userName, String password, String projectName,
                             String viewName, String folderName, StarTeamViewSelector configSelector) {
-    this(hostName, port, null, -1, userName, password, projectName, viewName, folderName, configSelector);
+    this(hostName, port, null, -1, userName, password, projectName, viewName, folderName, configSelector, true);
   }
 
   public StarTeamConnection(String hostName, int port, String agentHost, int agentPort, String userName,
                             String password, String projectName, String viewName, String folderName,
-                            StarTeamViewSelector configSelector) {
+                            StarTeamViewSelector configSelector, boolean cleanupstate) {
     checkParameters(hostName, port, userName, password, projectName, viewName, folderName);
     this.hostName = hostName;
     this.port = port;
@@ -100,6 +101,7 @@ public class StarTeamConnection implements Serializable {
     this.configSelector = configSelector;
     this.agentHost = agentHost;
     this.agentPort = agentPort;
+    this.cleanupstate = cleanupstate;
   }
 
   public StarTeamConnection(StarTeamConnection oldConnection, StarTeamViewSelector configSelector) {
@@ -261,23 +263,30 @@ public class StarTeamConnection implements Serializable {
       logger.println("*** " + sdf.format(new Date()) + " checked out not commit");
     }
 
-    logger.println("*** " + sdf.format(new Date()) + " removing [" + changeSet.getFilesToRemove().size() + "] files");
-    boolean quietDelete = changeSet.getFilesToRemove().size() > 100;
-    if (quietDelete) {
-      java.io.File file = new java.io.File("starteam-remove-files.txt");
-      logger.println("*** " + sdf.format(new Date()) + " More than 100 files, quiet mode enabled" +
-          ", see " + file.getAbsolutePath() + " for " + "details");
-      FileUtils.writeLines(file, changeSet.getFilesToRemove());
-    }
-    for (java.io.File f : changeSet.getFilesToRemove()) {
-      if (f.exists()) {
-        if (!quietDelete) {
-          logger.println("*** " + sdf.format(new Date()) + " [remove] [" + f + "]");
-        }
-        f.delete();
-      } else {
-        logger.println("*** " + sdf.format(new Date()) + " [remove:warn] Planned to remove [" + f + "]");
+    if (cleanupstate) {
+      logger.println("*** " + sdf.format(new Date()) + " removing [" + changeSet.getFilesToRemove().size() + "] files");
+      boolean quietDelete = changeSet.getFilesToRemove().size() > 100;
+      if (quietDelete) {
+        java.io.File file = new java.io.File("starteam-remove-files.txt");
+        logger.println("*** " + sdf.format(new Date()) + " More than 100 files, quiet mode enabled" +
+            ", see " + file.getAbsolutePath() + " for remove file list");
+        FileUtils.writeLines(file, changeSet.getFilesToRemove());
       }
+      for (java.io.File f : changeSet.getFilesToRemove()) {
+        if (f.exists()) {
+          if (!quietDelete) {
+            logger.println("*** " + sdf.format(new Date()) + " [remove] [" + f + "]");
+          }
+          f.delete();
+        } else {
+          logger.println("*** " + sdf.format(new Date()) + " [remove:warn] Planned to remove [" + f + "]");
+        }
+      }
+    } else {
+      java.io.File file = new java.io.File("starteam-not-remove-files.txt");
+      logger.println("*** " + sdf.format(new Date()) + " Configured not to cleanup files" +
+          ", see " + file.getAbsolutePath() + " for not-remove file list");
+      FileUtils.writeLines(file, changeSet.getFilesToRemove());
     }
     logger.println("*** " + sdf.format(new Date()) + " storing change set");
     OutputStream os = null;
@@ -495,7 +504,7 @@ public class StarTeamConnection implements Serializable {
   public StarTeamChangeSet computeChangeSet(Folder rootFolder, java.io.File workspace,
                                             final Collection<StarTeamFilePoint> historicFilePoints,
                                             PrintStream logger) throws IOException {
-    // --- compute changes as per starteam
+    // --- compute changes as per StarTeam
     long start = System.currentTimeMillis();
     long st = start;
     final Collection<com.starteam.File> starTeamFiles = StarTeamFunctions.listAllFiles(rootFolder, workspace);

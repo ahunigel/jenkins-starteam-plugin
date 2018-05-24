@@ -36,6 +36,7 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
   private final int agentport;
   private final String user;
   private final String passwd;
+  private final boolean cleanupstate;
   private final String projectname;
   private final String viewname;
   private final String foldername;
@@ -59,7 +60,7 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
    * @param listener      the build listener
    */
   public StarTeamCheckoutActor(String hostname, int port, String agentHost, int agentPort, String user,
-                               String passwd, String projectname, String viewname,
+                               String passwd, boolean cleanupstate, String projectname, String viewname,
                                String foldername, StarTeamViewSelector config, FilePath changelogFile,
                                BuildListener listener, AbstractBuild<?, ?> build, FilePath filePointFilePath) {
     this.hostname = hostname;
@@ -68,6 +69,7 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
     this.agentport = agentPort;
     this.user = user;
     this.passwd = passwd;
+    this.cleanupstate = cleanupstate;
     this.projectname = projectname;
     this.viewname = viewname;
     this.foldername = foldername;
@@ -114,7 +116,7 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
     listener.getLogger().println(String.format("Initializing StarTeam connection to %s:%s ...", hostname, port));
     StarTeamConnection connection = new StarTeamConnection(
         hostname, port, agenthost, agentport, user, passwd,
-        projectname, viewname, foldername, config);
+        projectname, viewname, foldername, config, cleanupstate);
     try {
       try {
         connection.initialize(buildNumber);

@@ -52,6 +52,7 @@ public class StarTeamSCM extends SCM {
   private final boolean promotionstate;
   private final String cacheagenthost;
   private final int cacheagentport;
+  private final boolean cleanupstate;
 
   private final StarTeamViewSelector config;
 
@@ -67,10 +68,12 @@ public class StarTeamSCM extends SCM {
    * @param password       password required to connect to starteam's server
    * @param labelname      label name used for polling view contents
    * @param promotionstate indication if label name is actual label name or a promotion state name
+   * @param cleanupstate   indication if files not in StarTeam should be removed
    */
   @DataBoundConstructor
-  public StarTeamSCM(String hostname, int port, String projectname,
-                     String viewname, String foldername, String username, String password, String labelname, boolean promotionstate, String cacheagenthost, int cacheagentport) {
+  public StarTeamSCM(String hostname, int port, String projectname, String viewname, String foldername,
+                     String username, String password, String labelname, boolean promotionstate,
+                     String cacheagenthost, int cacheagentport, boolean cleanupstate) {
     this.hostname = hostname;
     this.port = port;
     this.projectname = projectname;
@@ -82,6 +85,7 @@ public class StarTeamSCM extends SCM {
     this.promotionstate = promotionstate;
     this.cacheagenthost = cacheagenthost;
     this.cacheagentport = cacheagentport;
+    this.cleanupstate = cleanupstate;
     StarTeamViewSelector result = null;
     if ((this.labelname != null) && (this.labelname.length() != 0)) {
       try {
@@ -116,7 +120,7 @@ public class StarTeamSCM extends SCM {
 
     // Create an actor to do the checkout, possibly on a remote machine
     StarTeamCheckoutActor co_actor = new StarTeamCheckoutActor(hostname,
-        port, cacheagenthost, cacheagentport, user, passwd, projectname, viewname, foldername, config,
+        port, cacheagenthost, cacheagentport, user, passwd, cleanupstate, projectname, viewname, foldername, config,
         changeLogFilePath, listener, build, filePointFilePath);
     if (workspace.act(co_actor)) {
       // change log is written during checkout (only one pass for
@@ -325,4 +329,7 @@ public class StarTeamSCM extends SCM {
     return cacheagentport;
   }
 
+  public boolean isCleanupstate() {
+    return cleanupstate;
+  }
 }
