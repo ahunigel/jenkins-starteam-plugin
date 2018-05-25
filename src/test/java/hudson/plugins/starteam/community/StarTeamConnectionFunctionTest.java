@@ -75,7 +75,7 @@ public class StarTeamConnectionFunctionTest {
 		}
 		StarTeamConnection connection = new StarTeamConnection(
 				hostName, port, agentHost,agentPort,userName, password,
-				projectName, viewName, folderName, config);	
+				projectName, viewName, folderName, config, true);
 		connection.initialize(-1);
 		StarTeamChangeSet changeSet;
 		

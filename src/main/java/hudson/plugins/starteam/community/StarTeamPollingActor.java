@@ -92,7 +92,7 @@ public class StarTeamPollingActor implements FileCallable<Boolean> {
 
     StarTeamConnection connection = new StarTeamConnection(
         hostname, port, agenthost, agentport, user, passwd,
-        projectname, viewname, foldername, config);
+        projectname, viewname, foldername, config, false);
     try {
       connection.initialize(-1);
     } catch (StarTeamSCMException e) {

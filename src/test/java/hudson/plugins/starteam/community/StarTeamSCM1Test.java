@@ -38,7 +38,7 @@ public class StarTeamSCM1Test extends HudsonTestCase
   @Before
   public void setUp() throws Exception {
     super.setUp();
-    t = new StarTeamSCM(hostName, port, projectName, viewName, folderName, userName, password, null, false, cacheagenthost, cacheagentport) ;
+    t = new StarTeamSCM(hostName, port, projectName, viewName, folderName, userName, password, null, false, cacheagenthost, cacheagentport, true) ;
   }
     
   @After  
