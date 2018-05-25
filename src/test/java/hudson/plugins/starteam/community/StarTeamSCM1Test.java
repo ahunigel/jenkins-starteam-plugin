@@ -9,13 +9,14 @@ import hudson.model.FreeStyleProject;
 
 import java.nio.charset.Charset;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.jvnet.hudson.test.HudsonTestCase;
-@Ignore
-public class StarTeamSCM1Test extends HudsonTestCase
+import org.junit.*;
+import org.jvnet.hudson.test.JenkinsRule;
+
+import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.assertFalse;
+
+//@Ignore
+public class StarTeamSCM1Test
 {
   private static final int LOG_LIMIT = 1000;
   
@@ -37,19 +38,19 @@ public class StarTeamSCM1Test extends HudsonTestCase
   
   @Before
   public void setUp() throws Exception {
-    super.setUp();
     t = new StarTeamSCM(hostName, port, projectName, viewName, folderName, userName, password, null, false, cacheagenthost, cacheagentport, true) ;
   }
     
   @After  
-  public void tearDown() throws Exception  {  
-     super.tearDown();
+  public void tearDown() throws Exception  {
   }
+
+  @Rule public JenkinsRule j = new JenkinsRule();
 
   @Test
   public void testPollChange()throws Exception
   {
-    FreeStyleProject project = createFreeStyleProject();
+    FreeStyleProject project = j.createFreeStyleProject();
     project.setCustomWorkspace("D:/Hudson Builds/Jaru/Software");
     project.setScm(t);
 
@@ -58,7 +59,7 @@ public class StarTeamSCM1Test extends HudsonTestCase
     FreeStyleBuild build = project.scheduleBuild2(0, new Cause.UserCause()).get();
 
     System.out.println(build.getLog(LOG_LIMIT));
-    assertBuildStatus(Result.SUCCESS,build);
+    j.assertBuildStatus(Result.SUCCESS,build);
     FreeStyleBuild lastBuild = project.getLastBuild();
     assertNotNull(lastBuild);
 

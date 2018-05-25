@@ -13,7 +13,7 @@
   <groupId>hudson.plugins</groupId>
   <artifactId>starteam-community</artifactId>
   <packaging>hpi</packaging>
-  <version>0.7-SNAPSHOT</version>
+  <version>0.7</version>
   <name>Jenkins StarTeam Community plugin</name>
   <url>http://wiki.jenkins-ci.org/display/JENKINS/StarTeam</url>
   <inceptionYear>2007</inceptionYear>
@@ -27,7 +27,7 @@
   <!--test-->
   <scm>
     <connection>scm:git:https://github.com/jenkinsci/starteam-plugin.git</connection>
-    <developerConnection>scm:git:https://github.com/jenkinsci/starteam-plugin.git</developerConnection>
+    <developerConnection>scm:git:https://github.com/ahunigel/jenkins-starteam.git</developerConnection>
     <url>https://github.com/jenkinsci/starteam-plugin</url>
   </scm>
 
@@ -45,6 +45,7 @@
 
   <properties>
     <jenkins.version>2.0</jenkins.version>
+    <jenkins-test-harness.version>2.19</jenkins-test-harness.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
