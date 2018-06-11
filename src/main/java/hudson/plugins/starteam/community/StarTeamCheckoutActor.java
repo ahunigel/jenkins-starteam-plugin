@@ -135,7 +135,7 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
       // Check 'em out
       listener.getLogger().println("performing checkout ...");
 
-      connection.checkOut(changeSet, listener.getLogger(), filePointFilePath);
+      connection.checkOut(changeSet, workspace, listener.getLogger(), filePointFilePath);
 
       listener.getLogger().println("creating change log file ");
       try {
