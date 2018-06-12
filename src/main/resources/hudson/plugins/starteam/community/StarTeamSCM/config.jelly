@@ -28,7 +28,7 @@
 		<f:textbox name="starteam.community.foldername" value="${scm.foldername}" />
 	</f:entry>
     <f:entry title="Clean up files?" help="/plugin/starteam-community/help/stcleanupstate.html">
-        <f:checkbox name="starteam.community.cleanupstate" checked="${scm.cleanupstate}" default="true"/>
+        <f:checkbox name="starteam.community.cleanupstate" checked="${scm.cleanupstate}"/>
     </f:entry>
 	<f:entry title="Username" help="/plugin/starteam-community/help/stusername.html">
 		<f:textbox name="starteam.community.username" value="${scm.username}" />
