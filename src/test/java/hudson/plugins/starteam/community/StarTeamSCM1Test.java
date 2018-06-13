@@ -38,7 +38,8 @@ public class StarTeamSCM1Test
   
   @Before
   public void setUp() throws Exception {
-    t = new StarTeamSCM(hostName, port, projectName, viewName, folderName, userName, password, null, false, cacheagenthost, cacheagentport, true) ;
+    t = new StarTeamSCM(hostName, port, projectName, viewName, folderName, userName, password, null, false,
+        cacheagenthost, cacheagentport, true, null) ;
   }
     
   @After  
