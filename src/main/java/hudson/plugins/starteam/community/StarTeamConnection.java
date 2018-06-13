@@ -224,7 +224,7 @@ public class StarTeamConnection implements Serializable {
    *                          change set
    * @throws IOException if checkout fails.
    */
-  public void checkOut(StarTeamChangeSet changeSet, java.io.File workspace, final PrintStream logger,
+  public void checkOut(StarTeamChangeSet changeSet, java.io.File workFolder, final PrintStream logger,
                        FilePath filePointFilePath)
       throws IOException {
     long startTime = System.currentTimeMillis();
@@ -236,7 +236,7 @@ public class StarTeamConnection implements Serializable {
     filesToCheckout.addAll(changeSet.getFilesToCheckout());
     boolean quietCheckout = filesToCheckout.size() >= 2000;
     if (quietCheckout) {
-      java.io.File file = new java.io.File(workspace, "starteam-checkout-files.txt");
+      java.io.File file = new java.io.File(workFolder, "starteam-checkout-files.txt");
       logger.println("*** " + sdf.format(new Date()) + "  More than 2000 files, quiet mode enabled" +
           ", see " + file.getAbsolutePath() + " for " + "details");
       FileUtils.writeLines(file, filesToCheckout);
@@ -269,7 +269,7 @@ public class StarTeamConnection implements Serializable {
       logger.println("*** " + sdf.format(new Date()) + " removing [" + changeSet.getFilesToRemove().size() + "] files");
       boolean quietDelete = changeSet.getFilesToRemove().size() > 100;
       if (quietDelete) {
-        java.io.File file = new java.io.File(workspace, "starteam-remove-files.txt");
+        java.io.File file = new java.io.File(workFolder, "starteam-remove-files.txt");
         logger.println("*** " + sdf.format(new Date()) + " More than 100 files, quiet mode enabled" +
             ", see " + file.getAbsolutePath() + " for remove file list");
         FileUtils.writeLines(file, changeSet.getFilesToRemove());
@@ -286,7 +286,7 @@ public class StarTeamConnection implements Serializable {
       }
     } else {
       if (changeSet.getFilesToRemove().size() > 0) {
-        java.io.File file = new java.io.File(workspace, "starteam-not-remove-files.txt");
+        java.io.File file = new java.io.File(workFolder, "starteam-not-remove-files.txt");
         logger.println("*** " + sdf.format(new Date()) + " Configured not to cleanup files" +
             ", see " + file.getAbsolutePath() + " for not-remove file list");
         FileUtils.writeLines(file, changeSet.getFilesToRemove());

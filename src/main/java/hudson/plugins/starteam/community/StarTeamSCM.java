@@ -333,4 +333,8 @@ public class StarTeamSCM extends SCM {
   public boolean isCleanupstate() {
     return cleanupstate;
   }
+
+  public String getSubfolder() {
+    return subfolder;
+  }
 }
