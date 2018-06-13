@@ -284,10 +284,12 @@ public class StarTeamConnection implements Serializable {
         }
       }
     } else {
-      java.io.File file = new java.io.File(workspace, "starteam-not-remove-files.txt");
-      logger.println("*** " + sdf.format(new Date()) + " Configured not to cleanup files" +
-          ", see " + file.getAbsolutePath() + " for not-remove file list");
-      FileUtils.writeLines(file, changeSet.getFilesToRemove());
+      if (changeSet.getFilesToRemove().size() > 0) {
+        java.io.File file = new java.io.File(workspace, "starteam-not-remove-files.txt");
+        logger.println("*** " + sdf.format(new Date()) + " Configured not to cleanup files" +
+            ", see " + file.getAbsolutePath() + " for not-remove file list");
+        FileUtils.writeLines(file, changeSet.getFilesToRemove());
+      }
     }
     logger.println("*** " + sdf.format(new Date()) + " storing change set");
     OutputStream os = null;
