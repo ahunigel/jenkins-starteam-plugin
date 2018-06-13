@@ -204,8 +204,9 @@ public class StarTeamConnection implements Serializable {
       } catch (ParseException e) {
         throw new StarTeamSCMException("Could not correctly parse configuration date: " + e.getMessage());
       }
-      if (configuredView != null)
+      if (configuredView != null) {
         view = configuredView;
+      }
     }
     rootFolder = StarTeamFunctions.findFolderInView(view, folderName);
 
@@ -496,7 +497,7 @@ public class StarTeamConnection implements Serializable {
 
   /**
    * @param rootFolder         main project directory
-   * @param workspace          a workspace directory
+   * @param workFolder          a workFolder directory
    * @param historicFilePoints a collection containing File Points to be compared (previous
    *                           build)
    * @param logger             a logger for consuming log messages
@@ -504,13 +505,13 @@ public class StarTeamConnection implements Serializable {
    * @throws StarTeamSCMException
    * @throws IOException
    */
-  public StarTeamChangeSet computeChangeSet(Folder rootFolder, java.io.File workspace,
+  public StarTeamChangeSet computeChangeSet(Folder rootFolder, java.io.File workFolder,
                                             final Collection<StarTeamFilePoint> historicFilePoints,
                                             PrintStream logger) throws IOException {
     // --- compute changes as per StarTeam
     long start = System.currentTimeMillis();
     long st = start;
-    final Collection<com.starteam.File> starTeamFiles = StarTeamFunctions.listAllFiles(rootFolder, workspace);
+    final Collection<com.starteam.File> starTeamFiles = StarTeamFunctions.listAllFiles(rootFolder, workFolder);
     logger.println("*** " + sdf.format(new Date()) + " compute ChangeSet listAllFiles took " + (System.currentTimeMillis() - st) + " ms.");
     st = System.currentTimeMillis();
     final Map<java.io.File, com.starteam.File> starteamFileMap = StarTeamFunctions.convertToFileMap(starTeamFiles);
@@ -520,7 +521,7 @@ public class StarTeamConnection implements Serializable {
         .convertFilePointCollection(starTeamFiles);
     logger.println("*** " + sdf.format(new Date()) + " compute ChangeSet convertToFileMap took " + (System.currentTimeMillis() - st) + " ms.");
     st = System.currentTimeMillis();
-    final Collection<java.io.File> fileSystemFiles = StarTeamFilePointFunctions.listAllFiles(workspace);
+    final Collection<java.io.File> fileSystemFiles = StarTeamFilePointFunctions.listAllFiles(workFolder);
     final Collection<java.io.File> fileSystemRemove = new TreeSet<java.io.File>(fileSystemFiles);
     fileSystemRemove.removeAll(starTeamFileSet);
 

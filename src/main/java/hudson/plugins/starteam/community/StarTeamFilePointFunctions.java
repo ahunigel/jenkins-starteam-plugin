@@ -71,12 +71,12 @@ public class StarTeamFilePointFunctions {
   /**
    * Recursive file system discovery
    *
-   * @param workspace a Hudson workspace directory
-   * @return collection of files within workspace
+   * @param workFolder a Hudson workFolder directory
+   * @return collection of files within workFolder
    */
-  public static Collection<java.io.File> listAllFiles(final java.io.File workspace) {
+  public static Collection<java.io.File> listAllFiles(final java.io.File workFolder) {
     Collection<java.io.File> result = new ArrayList<java.io.File>();
-    listAllFiles(result, workspace.getAbsoluteFile());
+    listAllFiles(result, workFolder.getAbsoluteFile());
     return result;
   }
 

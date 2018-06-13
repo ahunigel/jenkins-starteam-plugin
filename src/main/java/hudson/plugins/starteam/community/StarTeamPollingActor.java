@@ -3,6 +3,7 @@
  */
 package hudson.plugins.starteam.community;
 
+import com.google.common.base.Strings;
 import hudson.FilePath.FileCallable;
 import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
@@ -44,6 +45,8 @@ public class StarTeamPollingActor implements FileCallable<Boolean> {
 
   private String foldername;
 
+  private String subfolder;
+
   private final TaskListener listener;
 
   private final StarTeamViewSelector config;
@@ -60,13 +63,14 @@ public class StarTeamPollingActor implements FileCallable<Boolean> {
    * @param projectname        starteam project name
    * @param viewname           starteam view name
    * @param foldername         starteam parent folder name
+   * @param subfolder
    * @param config             configuration selector
    * @param listener           Hudson task listener.
    * @param historicFilePoints
    */
   public StarTeamPollingActor(String hostname, int port, String agentHost, int agentPort, String user,
                               String passwd, String projectname, String viewname,
-                              String foldername, StarTeamViewSelector config, TaskListener listener,
+                              String foldername, String subfolder, StarTeamViewSelector config, TaskListener listener,
                               Collection<StarTeamFilePoint> historicFilePoints) {
     this.hostname = hostname;
     this.port = port;
@@ -78,6 +82,7 @@ public class StarTeamPollingActor implements FileCallable<Boolean> {
     this.viewname = viewname;
     this.foldername = foldername;
     this.listener = listener;
+    this.subfolder = subfolder;
     this.config = config;
     this.historicFilePoints = historicFilePoints;
   }
@@ -102,8 +107,9 @@ public class StarTeamPollingActor implements FileCallable<Boolean> {
     }
 
     StarTeamChangeSet changeSet = null;
+    File workFolder = Strings.isNullOrEmpty(subfolder) ? f : new File(f, subfolder.trim());
     try {
-      changeSet = connection.computeChangeSet(connection.getRootFolder(), f, historicFilePoints, listener.getLogger());
+      changeSet = connection.computeChangeSet(connection.getRootFolder(), workFolder, historicFilePoints, listener.getLogger());
     } catch (Exception e) {
       e.printStackTrace(listener.getLogger());
     }
