@@ -195,9 +195,6 @@ public class StarTeamSCM extends SCM {
    */
   public static final class StarTeamSCMDescriptorImpl extends SCMDescriptor<StarTeamSCM> {
 
-    private final Collection<StarTeamSCM> scms = new ArrayList<StarTeamSCM>();
-    private static final Logger LOGGER = Logger.getLogger(StarTeamSCMDescriptorImpl.class.getName());
-
     public StarTeamSCMDescriptorImpl() {
       super(StarTeamSCM.class, null);
       load();
@@ -211,20 +208,7 @@ public class StarTeamSCM extends SCM {
     @Override
     public SCM newInstance(StaplerRequest req, JSONObject formData)
         throws hudson.model.Descriptor.FormException {
-      // Go ahead and create the scm.. the bindParameters() method
-      // takes the request and nabs all "starteam." -prefixed
-      // parameters from it, then sets the scm instance's fields
-      // according to those parameters.
-      StarTeamSCM scm = null;
-      try {
-        scm = req.bindParameters(StarTeamSCM.class, "starteam.community.");
-        scms.add(scm);
-      } catch (RuntimeException e) {
-        LOGGER.log(SEVERE, e.getMessage(), e);
-      }
-      // We don't have working repo browsers yet...
-      // scm.repositoryBrowser = RepositoryBrowsers.createInstance(
-      // StarTeamRepositoryBrowser.class, req, "starteam.browser");
+      StarTeamSCM scm = (StarTeamSCM) super.newInstance(req, formData);
       return scm;
     }
 
@@ -236,6 +220,7 @@ public class StarTeamSCM extends SCM {
     @Override
     public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
       // This is used for the global configuration
+      save();
       return true;
     }
 
