@@ -97,7 +97,8 @@ public class StarteamCheckoutActorTest {
 			Assert.fail("");
 		}
 
-		return new StarTeamCheckoutActor( hostName, port, "CNXA1ER-STARTEA",5201,userName, password, true, projectName, viewName, folderName, config, changeLogFilePath, listener, build, filePointsFilePath) ;
+		return new StarTeamCheckoutActor( hostName, port, "CNXA1ER-STARTEA",5201,userName, password, true, projectName,
+				viewName, folderName, null, config, changeLogFilePath, listener, build, filePointsFilePath) ;
 	}
 	
 	@Test

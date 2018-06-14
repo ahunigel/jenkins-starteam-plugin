@@ -49,7 +49,7 @@ public class StarTeamSCMTest extends HudsonTestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 		t = new StarTeamSCM(hostName, port, projectName, viewName, folderName, userName, password, null, false,null,-1,
-				true) ;
+				true, null) ;
 	}
 		
 	/**
@@ -60,7 +60,7 @@ public class StarTeamSCMTest extends HudsonTestCase {
 	{
 		    boolean promotionState = false;
 			StarTeamSCM t = new StarTeamSCM(hostName, port, projectName, viewName, folderName, userName, password,
-					labelName, promotionState,null,-1, true) ;
+					labelName, promotionState,null,-1, true, null) ;
 			assertEquals(hostName,t.getHostname());
 			assertEquals(port,t.getPort());
 			assertEquals(projectName,t.getProjectname());
@@ -83,7 +83,7 @@ public class StarTeamSCMTest extends HudsonTestCase {
         p.setAssignedLabel(s.getSelfLabel());
         boolean promotionState = false;
         p.setScm(new StarTeamSCM(hostName, port, projectName, viewName, folderName, userName, password,  labelName,
-						promotionState,null,-1, true));
+						promotionState,null,-1, true, null));
 
         FreeStyleBuild b = assertBuildStatusSuccess(p.scheduleBuild2(0, new Cause.UserCause()).get());
         assertTrue(b.getWorkspace().child(testFile).exists());  // use a file that is in the root directory of your project
@@ -99,7 +99,7 @@ public class StarTeamSCMTest extends HudsonTestCase {
 	    boolean promotionState = false;
         FreeStyleProject project = createFreeStyleProject();
         StarTeamSCM scm = new StarTeamSCM(hostName, port, projectName, viewName, folderName, userName, password,
-						labelName, promotionState,null,-1, true) ;
+						labelName, promotionState,null,-1, true, null) ;
         project.setScm(scm);
 
         // config roundtrip
@@ -111,7 +111,7 @@ public class StarTeamSCMTest extends HudsonTestCase {
         
         promotionState = true;
         scm = new StarTeamSCM(hostName, port, projectName, viewName, folderName, userName, password, promotionName,
-						promotionState,null,-1, true) ;
+						promotionState,null,-1, true, null) ;
         project.setScm(scm);
 
         // config roundtrip
@@ -132,7 +132,7 @@ public class StarTeamSCMTest extends HudsonTestCase {
         boolean promotionState = false;
         FreeStyleProject project = createFreeStyleProject();
         StarTeamSCM scm = new StarTeamSCM(hostName, port, projectName, viewName, folderName, userName, password,
-						labelName, promotionState,null,-1, true) ;
+						labelName, promotionState,null,-1, true, null) ;
         project.setScm(scm);
         // config roundtrip
         submit(new WebClient().getPage(project,"configure").getFormByName("config"));
@@ -160,7 +160,7 @@ public class StarTeamSCMTest extends HudsonTestCase {
         
         // move to previous label
         scm = new StarTeamSCM(hostName, port, projectName, viewName, folderName, userName, password,
-						labelName+"Before", promotionState,null,-1, true) ;
+						labelName+"Before", promotionState,null,-1, true, null) ;
         project.setScm(scm);
         submit(new WebClient().getPage(project,"configure").getFormByName("config"));
 
@@ -174,7 +174,7 @@ public class StarTeamSCMTest extends HudsonTestCase {
         
         // move to next label
         scm = new StarTeamSCM(hostName, port, projectName, viewName, folderName, userName, password,
-						labelName+"After", promotionState,null,-1, true) ;
+						labelName+"After", promotionState,null,-1, true, null) ;
         project.setScm(scm);
         submit(new WebClient().getPage(project,"configure").getFormByName("config"));
 

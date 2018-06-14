@@ -1,5 +1,6 @@
 package hudson.plugins.starteam.community;
 
+import com.google.common.base.Strings;
 import com.starteam.Folder;
 import hudson.FilePath;
 import hudson.FilePath.FileCallable;
@@ -40,6 +41,7 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
   private final String projectname;
   private final String viewname;
   private final String foldername;
+  private final String subfolder;
   private final StarTeamViewSelector config;
   private final Collection<StarTeamFilePoint> historicFilePoints;
   private final FilePath filePointFilePath;
@@ -55,13 +57,14 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
    * @param projectname   starteam project name
    * @param viewname      starteam view name
    * @param foldername    starteam folder name
+   * @param subfolder     checkout to subfolder name
    * @param config        configuration selector
    * @param changelogFile change log file, as a filepath, to be able to write remotely.
    * @param listener      the build listener
    */
   public StarTeamCheckoutActor(String hostname, int port, String agentHost, int agentPort, String user,
                                String passwd, boolean cleanupstate, String projectname, String viewname,
-                               String foldername, StarTeamViewSelector config, FilePath changelogFile,
+                               String foldername, String subfolder, StarTeamViewSelector config, FilePath changelogFile,
                                BuildListener listener, AbstractBuild<?, ?> build, FilePath filePointFilePath) {
     this.hostname = hostname;
     this.port = port;
@@ -73,6 +76,7 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
     this.projectname = projectname;
     this.viewname = viewname;
     this.foldername = foldername;
+    this.subfolder = subfolder;
     this.changelog = changelogFile;
     this.listener = listener;
     this.config = config;
@@ -131,15 +135,16 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
       StarTeamChangeSet changeSet;
 
       Folder rootFolder = connection.getRootFolder();
-      changeSet = connection.computeChangeSet(rootFolder, workspace, historicFilePoints, listener.getLogger());
+      File workFolder = Strings.isNullOrEmpty(subfolder) ? workspace : new File(workspace, subfolder.trim());
+      changeSet = connection.computeChangeSet(rootFolder, workFolder, historicFilePoints, listener.getLogger());
       // Check 'em out
       listener.getLogger().println("performing checkout ...");
 
-      connection.checkOut(changeSet, workspace, listener.getLogger(), filePointFilePath);
+      connection.checkOut(changeSet, workFolder, listener.getLogger(), filePointFilePath);
 
       listener.getLogger().println("creating change log file ");
       try {
-        createChangeLog(changeSet, workspace, changelog, listener, connection);
+        createChangeLog(changeSet, workFolder, changelog, listener, connection);
       } catch (InterruptedException e) {
         listener.getLogger().println("unable to create changelog file " + e.getMessage());
         Thread.currentThread().interrupt();
@@ -168,7 +173,8 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
    */
   protected boolean createChangeLog(
       StarTeamChangeSet changes, File aRootFile,
-      FilePath aChangelogFile, BuildListener aListener, StarTeamConnection aConnection) throws IOException, InterruptedException {
+      FilePath aChangelogFile, BuildListener aListener, StarTeamConnection aConnection)
+      throws IOException, InterruptedException {
 
 
     // create empty change log during call.
@@ -185,9 +191,7 @@ class StarTeamCheckoutActor implements FileCallable<Boolean>, Serializable {
     try {
       created = StarTeamChangeLogBuilder.writeChangeLog(os, changes);
     } catch (Exception ex) {
-      listener.getLogger().println(
-          "change log creation failed due to unexpected error : "
-              + ex.getMessage());
+      listener.getLogger().println("change log creation failed due to unexpected error : " + ex.getMessage());
     } finally {
       os.close();
     }

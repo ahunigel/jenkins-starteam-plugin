@@ -53,6 +53,7 @@ public class StarTeamSCM extends SCM {
   private final String cacheagenthost;
   private final int cacheagentport;
   private final boolean cleanupstate;
+  private final String subfolder;
 
   private final StarTeamViewSelector config;
 
@@ -73,7 +74,7 @@ public class StarTeamSCM extends SCM {
   @DataBoundConstructor
   public StarTeamSCM(String hostname, int port, String projectname, String viewname, String foldername,
                      String username, String password, String labelname, boolean promotionstate,
-                     String cacheagenthost, int cacheagentport, boolean cleanupstate) {
+                     String cacheagenthost, int cacheagentport, boolean cleanupstate, String subfolder) {
     this.hostname = hostname;
     this.port = port;
     this.projectname = projectname;
@@ -86,6 +87,7 @@ public class StarTeamSCM extends SCM {
     this.cacheagenthost = cacheagenthost;
     this.cacheagentport = cacheagentport;
     this.cleanupstate = cleanupstate;
+    this.subfolder = subfolder;
     StarTeamViewSelector result = null;
     if ((this.labelname != null) && (this.labelname.length() != 0)) {
       try {
@@ -119,18 +121,17 @@ public class StarTeamSCM extends SCM {
     FilePath filePointFilePath = new FilePath(new File(build.getRootDir(), StarTeamConnection.FILE_POINT_FILENAME));
 
     // Create an actor to do the checkout, possibly on a remote machine
-    StarTeamCheckoutActor co_actor = new StarTeamCheckoutActor(hostname,
-        port, cacheagenthost, cacheagentport, user, passwd, cleanupstate, projectname, viewname, foldername, config,
+    StarTeamCheckoutActor co_actor = new StarTeamCheckoutActor(hostname, port, cacheagenthost, cacheagentport,
+        user, passwd, cleanupstate, projectname, viewname, foldername, subfolder, config,
         changeLogFilePath, listener, build, filePointFilePath);
     if (workspace.act(co_actor)) {
       // change log is written during checkout (only one pass for
       // comparison)
-      status = true;
+      return true;
     } else {
       listener.getLogger().println("StarTeam checkout failed");
-      status = false;
+      return false;
     }
-    return status;
   }
 
   /*
@@ -176,7 +177,7 @@ public class StarTeamSCM extends SCM {
     }
     // Create an actor to do the polling, possibly on a remote machine
     StarTeamPollingActor p_actor = new StarTeamPollingActor(hostname, port, cacheagenthost, cacheagentport,
-        user, passwd, projectname, viewname, foldername,
+        user, passwd, projectname, viewname, foldername, subfolder,
         config, listener,
         historicFilePoints);
     if (workspace.act(p_actor)) {
@@ -331,5 +332,9 @@ public class StarTeamSCM extends SCM {
 
   public boolean isCleanupstate() {
     return cleanupstate;
+  }
+
+  public String getSubfolder() {
+    return subfolder;
   }
 }

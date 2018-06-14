@@ -27,6 +27,9 @@
 	<f:entry title="Folder name" help="/plugin/starteam-community/help/stfoldername.html">
 		<f:textbox name="starteam.community.foldername" value="${scm.foldername}" />
 	</f:entry>
+	<f:entry title="Checkout to subfolder" help="/plugin/starteam-community/help/subfolder.html">
+		<f:textbox name="starteam.community.subfolder" value="${scm.subfolder}" />
+	</f:entry>
     <f:entry title="Clean up files?" help="/plugin/starteam-community/help/stcleanupstate.html">
         <f:checkbox name="starteam.community.cleanupstate" checked="${scm.cleanupstate}"/>
     </f:entry>
