@@ -44,7 +44,7 @@
   </distributionManagement>
 
   <properties>
-    <jenkins.version>2.0</jenkins.version>
+<!--     <jenkins.version>2.0</jenkins.version> -->
     <jenkins-test-harness.version>2.19</jenkins-test-harness.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
