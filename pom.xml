@@ -157,6 +157,10 @@
   </contributors>
   <pluginRepositories>
     <pluginRepository>
+      <id>repo.jenkins-ci.org</id>
+      <url>https://repo.jenkins-ci.org/public/</url>
+    </pluginRepository>
+    <pluginRepository>
       <id>snapshots.repository.codehaus.org</id>
       <url>http://snapshots.repository.codehaus.org</url>
     </pluginRepository>
