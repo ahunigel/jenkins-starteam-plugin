@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven
+name: Jenkins plugin with Maven
 
 on:
   push:
@@ -16,4 +16,4 @@ on:
 
 jobs:
   build:
-    uses: ahunigel/reusable-workflows/.github/workflows/maven.yml@main
+    uses: ahunigel/reusable-workflows/.github/workflows/maven-hpi.yml@main
